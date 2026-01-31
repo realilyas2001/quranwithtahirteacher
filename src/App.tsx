@@ -17,8 +17,6 @@ import Dashboard from "./pages/Dashboard";
 import TodayClasses from "./pages/TodayClasses";
 import ClassRoom from "./pages/ClassRoom";
 import {
-  Classes,
-  ClassSchedule,
   LessonHistory,
   ExaminerRemarks,
   Attendance,
@@ -35,6 +33,8 @@ import {
   Announcements,
 } from "./pages/placeholders";
 import Students from "./pages/students/Students";
+import Classes from "./pages/classes/Classes";
+import ClassSchedule from "./pages/classes/ClassSchedule";
 import StudentProfile from "./pages/students/StudentProfile";
 import AddLesson from "./pages/lessons/AddLesson";
 
