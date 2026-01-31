@@ -1,127 +1,159 @@
 
 
-# Phase 5: Quick Lesson Flow
+# Phase 6: Student Management
 
 ## Overview
 
-Build a streamlined lesson recording system that allows teachers to quickly document class sessions. The form will be pre-populated with class data and offer both a "Quick Mode" (minimal fields) and "Full Mode" (comprehensive).
+Build a comprehensive student management system that allows teachers to view, search, and manage their assigned students. This includes a student list page with filtering capabilities and a detailed student profile page showing progress, lessons, and schedule.
+
+---
+
+## Architecture
+
+```text
+Teacher navigates to /students
+        |
+        v
+Students List Page loads:
+  - Grid/List view of all assigned students
+  - Search by name/email
+  - Filter by status, course level
+  - Sort by name, progress, last class
+        |
+        v
+Teacher clicks on a student
+        |
+        v
+Student Profile Page loads:
+  - Overview tab: Basic info, progress, schedule
+  - Lessons tab: Recent lessons with ratings
+  - Classes tab: Class history and attendance
+  - Notes tab: Private teacher notes
+```
 
 ---
 
 ## User Flow
 
-```text
-Video call ends
-        |
-        v
-Redirect to /lessons/add?classId=xxx
-        |
-        v
-AddLesson page loads with:
-  - Student info pre-filled
-  - Class details loaded
-  - Quick mode by default
-        |
-        v
-Teacher fills in:
-  - Quran subject (Tilawah, Tajweed, Hifz)
-  - Surah/Juzz/Ayah progress
-  - Quick ratings (1-5 stars)
-  - Optional comments
-        |
-        v
-Save → Mark class as lesson_added = true
-        |
-        v
-Redirect to Dashboard/Today Classes
-```
+### Students List Page (`/students`)
+1. Teacher sees a grid/list of all their assigned students
+2. Search bar filters students by name or email
+3. Status filter shows Active/Inactive/On Hold students
+4. Course level filter narrows by Beginner/Intermediate/Advanced
+5. Quick stats show total students, active count, today's classes
+6. Click on student card navigates to profile
+
+### Student Profile Page (`/students/:id`)
+1. Header shows student avatar, name, country, status badge
+2. Tabs organize different data sections:
+   - **Overview**: Schedule, current progress, contact info
+   - **Lessons**: Recent lesson history with ratings
+   - **Classes**: Upcoming and past classes
+   - **Notes**: Private notes only visible to teacher
+3. Quick actions: Start class, add lesson, schedule recovery
 
 ---
 
 ## Components to Create
 
-### 1. AddLesson Page (Replace Placeholder)
+### 1. Students List Page
 
-**File**: `src/pages/lessons/AddLesson.tsx`
+**File**: `src/pages/students/Students.tsx`
 
 **Features**:
-- Reads `classId` from URL query params
-- Pre-loads class and student data
-- Two modes toggle: Quick Mode / Full Mode
-- Form validation with react-hook-form + zod
-- Auto-saves draft locally (optional)
+- Responsive grid layout (cards on desktop, list on mobile)
+- Search with debounce for performance
+- Multi-filter dropdowns (status, course level)
+- Sort options (name A-Z, progress, recent activity)
+- Empty state for no students
+- Loading skeletons
 
-**Quick Mode Fields** (minimal - for fast entry):
-- Quran subject dropdown
-- Surah selection
-- Ayah range (from - to)
-- Star ratings (3 categories)
-- Comments textarea
-
-**Full Mode Fields** (comprehensive):
-- All Quick Mode fields plus:
-- Juzz number
-- Page range
-- Memorization details (surah, ayah range)
-- Fundamental Islam topic
-- Ethics topic
-- Teaching method
-- Image attachments
+**Card displays**:
+- Avatar with status indicator
+- Student name and country flag
+- Course level badge
+- Progress bar (current_juzz / 30)
+- Last class date
+- Quick call button
 
 ---
 
-### 2. Surah Selector Component
+### 2. Student Profile Page
 
-**File**: `src/components/lessons/SurahSelector.tsx`
+**File**: `src/pages/students/StudentProfile.tsx`
 
 **Features**:
-- Combobox with search for all 114 surahs
-- Shows surah number and name
-- Arabic + English names
-- Recently used surahs at top
+- Profile header with large avatar
+- Tab-based navigation for sections
+- Real-time data fetching with react-query
+- Responsive design for mobile
+
+**Tabs**:
+1. **Overview Tab**
+   - Schedule display (days, time, timezone)
+   - Current progress (surah, juzz, percentage)
+   - Contact info (email, phone, country)
+   - Quick stats (total classes, attendance rate)
+
+2. **Lessons Tab**
+   - Recent lessons table/cards
+   - Filter by date range
+   - Average ratings display
+   - Link to full lesson details
+
+3. **Classes Tab**
+   - Upcoming scheduled classes
+   - Past class history
+   - Status badges (completed, missed, etc.)
+   - Recovery class indicators
+
+4. **Notes Tab**
+   - Private teacher notes textarea
+   - Save/edit functionality
+   - Last updated timestamp
 
 ---
 
-### 3. Star Rating Component
+### 3. Student Card Component
 
-**File**: `src/components/lessons/StarRating.tsx`
+**File**: `src/components/students/StudentCard.tsx`
+
+**Purpose**: Reusable card for student list
 
 **Features**:
-- Interactive 5-star rating
-- Labels: Concentration, Revision, Progress
-- Touch-friendly for mobile
+- Avatar with online/offline indicator
+- Name with country flag emoji
+- Course level and status badges
+- Progress visualization
+- Quick action buttons
 
 ---
 
-### 4. Lesson Form Hook
+### 4. Student Stats Component
 
-**File**: `src/hooks/useLessonForm.ts`
+**File**: `src/components/students/StudentStats.tsx`
 
-**Purpose**: Manage form state and submission
+**Purpose**: Summary statistics header
 
 **Features**:
-- Form validation schema
-- Submit mutation to lessons table
-- Update class `lesson_added` flag
-- Optimistic updates
+- Total students count
+- Active students count
+- Students with class today
+- Average progress across all students
 
 ---
 
-## Data Structures
+### 5. Progress Indicator Component
 
-### Quran Subject Options
-```text
-- Tilawah (Reading)
-- Tajweed (Pronunciation Rules)
-- Hifz (Memorization)
-- Revision
-- Arabic Language
-- Islamic Studies
-```
+**File**: `src/components/students/ProgressIndicator.tsx`
 
-### Surah List
-- All 114 surahs with Arabic and English names
-- Stored as constants file for offline access
+**Purpose**: Visual progress display
+
+**Features**:
+- Circular or bar progress
+- Juzz completion (x/30)
+- Surah name display
+- Percentage label
 
 ---
 
@@ -129,11 +161,12 @@ Redirect to Dashboard/Today Classes
 
 | File | Purpose |
 |------|---------|
-| `src/pages/lessons/AddLesson.tsx` | Main lesson form page |
-| `src/components/lessons/SurahSelector.tsx` | Searchable surah dropdown |
-| `src/components/lessons/StarRating.tsx` | Rating input component |
-| `src/hooks/useLessonForm.ts` | Form logic and submission |
-| `src/lib/quran-data.ts` | Surah names and metadata |
+| `src/pages/students/Students.tsx` | Main students list page |
+| `src/pages/students/StudentProfile.tsx` | Individual student profile |
+| `src/components/students/StudentCard.tsx` | Reusable student card |
+| `src/components/students/StudentStats.tsx` | Summary statistics |
+| `src/components/students/ProgressIndicator.tsx` | Progress visualization |
+| `src/hooks/useStudents.ts` | Data fetching hook |
 
 ---
 
@@ -141,112 +174,121 @@ Redirect to Dashboard/Today Classes
 
 | File | Changes |
 |------|---------|
-| `src/pages/placeholders.tsx` | Remove AddLesson export |
-| `src/App.tsx` | Update route to new component |
+| `src/pages/placeholders.tsx` | Remove Students and StudentProfile exports |
+| `src/App.tsx` | Update routes to new components |
 
 ---
 
-## Form Validation Schema
+## Data Fetching
 
+### Students List Query
 ```text
-Required fields (Quick Mode):
-- quran_subject (dropdown)
-- surah (from surah selector)
-- ayah_from (number, 1-286)
-- ayah_to (number, >= ayah_from)
+SELECT * FROM students
+WHERE teacher_id = current_teacher_id
+ORDER BY full_name ASC
+```
 
-Optional but encouraged:
-- rating_concentration (1-5)
-- rating_revision (1-5)
-- rating_progress (1-5)
-- comments (text)
+### Student Profile Query
+```text
+SELECT * FROM students WHERE id = student_id
 
-Full Mode additions:
-- juzz (1-30)
-- page_from (1-604)
-- page_to (>= page_from)
-- memorization fields
-- fundamental_islam
-- ethics
-- method
+-- With related data:
+- Recent lessons (last 10)
+- Upcoming classes (next 7 days)
+- Past classes (last 30 days)
+- Attendance statistics
+```
+
+### Statistics Query
+```text
+- COUNT(*) total students
+- COUNT(*) WHERE status = 'active'
+- COUNT(*) students with class today
+- AVG(progress_percentage)
 ```
 
 ---
 
 ## UI Layout
 
-### Quick Mode (Default)
+### Students List Page
 ```text
-┌─────────────────────────────────────────────────┐
-│  Add Lesson                          [Full Mode]│
-├─────────────────────────────────────────────────┤
-│  ┌───────────────────────────────────────────┐  │
-│  │  Ahmed Hassan • Tajweed Intermediate      │  │
-│  │  Class: Jan 31, 2026 • 10:00 AM           │  │
-│  └───────────────────────────────────────────┘  │
-│                                                 │
-│  Subject ─────────────────────────────────────  │
-│  [Tajweed                              ▼]       │
-│                                                 │
-│  Surah ───────────────────────────────────────  │
-│  [Al-Baqarah (2)                       ▼]       │
-│                                                 │
-│  Ayah Range ──────────────────────────────────  │
-│  From: [142]     To: [150]                      │
-│                                                 │
-│  Ratings ─────────────────────────────────────  │
-│  Concentration  ★★★★☆                           │
-│  Revision       ★★★★★                           │
-│  Progress       ★★★☆☆                           │
-│                                                 │
-│  Comments ────────────────────────────────────  │
-│  [                                         ]    │
-│  [                                         ]    │
-│                                                 │
-│         [Cancel]              [Save Lesson]     │
-└─────────────────────────────────────────────────┘
++--------------------------------------------------+
+|  My Students                    [Grid] [List]    |
+|                                                  |
+|  [Search students...     ]  [Status v] [Level v] |
+|                                                  |
+|  +--------+  +--------+  +--------+  +--------+  |
+|  | Avatar |  | Avatar |  | Avatar |  | Avatar |  |
+|  | Name   |  | Name   |  | Name   |  | Name   |  |
+|  | Level  |  | Level  |  | Level  |  | Level  |  |
+|  | ====== |  | ====== |  | ====== |  | ====== |  |
+|  | 45%    |  | 72%    |  | 23%    |  | 89%    |  |
+|  +--------+  +--------+  +--------+  +--------+  |
+|                                                  |
+|  +--------+  +--------+  +--------+  +--------+  |
+|  | ...    |  | ...    |  | ...    |  | ...    |  |
+|  +--------+  +--------+  +--------+  +--------+  |
++--------------------------------------------------+
 ```
 
-### Full Mode (Expandable)
-- Shows additional collapsible sections:
-  - Page Range
-  - Memorization Details
-  - Islamic Studies
-  - Teaching Method
-  - Attachments
-
----
-
-## Database Operations
-
-### On Form Submit
+### Student Profile Page
 ```text
-1. INSERT into lessons table with all form data
-2. UPDATE classes SET lesson_added = true WHERE id = class_id
-3. UPDATE students SET current_surah, current_juzz (optional)
-4. INVALIDATE queries for today-classes and lessons
++--------------------------------------------------+
+|  <- Back to Students                              |
+|                                                  |
+|  +--------+                                       |
+|  | AVATAR |  Ahmed Hassan                        |
+|  |        |  Saudi Arabia | Active               |
+|  +--------+  Tajweed Intermediate                |
+|                                                  |
+|  [Overview] [Lessons] [Classes] [Notes]          |
+|  ------------------------------------------------|
+|                                                  |
+|  Schedule                    Progress            |
+|  Mon, Wed, Fri @ 10:00 AM    Surah: Al-Baqarah   |
+|  30 minutes • Asia/Riyadh    Juzz: 3/30 (10%)    |
+|                                                  |
+|  Contact                     Stats               |
+|  ahmed@email.com             156 total classes   |
+|  +966 xxx xxx                94% attendance      |
++--------------------------------------------------+
 ```
 
 ---
 
 ## Technical Details
 
-### Pre-filled Data from Class
-When navigating from a completed call:
-- student_id from class
-- class_id from URL
-- teacher_id from auth context
-- course_level from student record
+### Search Implementation
+- Debounced input (300ms delay)
+- Client-side filtering for small datasets
+- Server-side search for larger lists (future)
 
-### Surah Data Structure
-```javascript
-{
-  number: 1,
-  name: "Al-Fatihah",
-  arabicName: "الفاتحة",
-  ayahCount: 7,
-  juzz: 1
-}
+### Filter Options
+
+**Status Filter**:
+- All
+- Active
+- Inactive
+- On Hold
+
+**Course Level Filter**:
+- All
+- Beginner
+- Intermediate
+- Advanced
+
+**Sort Options**:
+- Name (A-Z)
+- Name (Z-A)
+- Progress (High to Low)
+- Progress (Low to High)
+- Recent Activity
+
+### Progress Calculation
+```text
+Progress = (current_juzz / 30) * 100
+Visual: Circular progress or horizontal bar
 ```
 
 ---
@@ -255,20 +297,28 @@ When navigating from a completed call:
 
 | Scenario | Handling |
 |----------|----------|
-| No classId in URL | Show student selector instead |
-| Invalid classId | Redirect to today-classes |
-| Lesson already added | Show warning, allow edit |
-| Network error | Save locally, retry |
-| Form validation | Show inline errors |
+| No students assigned | Show "No students" empty state with helpful message |
+| Student not found | Redirect to /students with error toast |
+| Failed to load data | Show error state with retry button |
+| Network error | Display offline indicator, cached data if available |
+
+---
+
+## Mobile Responsiveness
+
+- **Desktop**: 4-column grid for student cards
+- **Tablet**: 2-column grid
+- **Mobile**: Single column list view
+- **Profile**: Stack tabs vertically, swipeable sections
 
 ---
 
 ## Outcome
 
 After implementation:
-- Teachers can record lessons in under 30 seconds (Quick Mode)
-- All lesson data properly tracked in database
-- Classes automatically marked as having lessons added
-- Seamless flow from video call to lesson entry
-- Full audit trail of student progress
+- Teachers can quickly find and view all their students
+- Student progress is clearly visualized
+- Easy navigation between student profile sections
+- Mobile-friendly design for on-the-go access
+- Foundation for adding student management features (edit notes, schedule changes)
 
