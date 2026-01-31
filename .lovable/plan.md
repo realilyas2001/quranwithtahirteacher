@@ -1,200 +1,127 @@
 
 
-# Phase 4: Video Calling with Daily.co ✅ COMPLETED
+# Phase 5: Quick Lesson Flow
 
 ## Overview
 
-Integrated Daily.co for real-time 1-to-1 video calls between teachers and students. This replaces the simulated call flow with actual WebRTC video calling.
+Build a streamlined lesson recording system that allows teachers to quickly document class sessions. The form will be pre-populated with class data and offer both a "Quick Mode" (minimal fields) and "Full Mode" (comprehensive).
 
 ---
 
-## Implementation Summary
-
-### Files Created:
-- `supabase/functions/create-daily-room/index.ts` - Edge function to create Daily.co rooms
-- `src/components/video/VideoRoom.tsx` - Main video interface component
-- `src/components/video/VideoTile.tsx` - Individual video tile with track management
-- `src/components/video/CallControls.tsx` - Mute/camera/end call buttons
-- `src/components/video/ClassTimer.tsx` - Elapsed time display
-- `src/pages/ClassRoom.tsx` - Dedicated video call page
-- `src/hooks/useVideoCall.ts` - Call state management hook
-
-### Files Modified:
-- `src/App.tsx` - Added /classroom/:classId route
-- `src/pages/TodayClasses.tsx` - Navigate to video room on Call/Start
-
-## Architecture
+## User Flow
 
 ```text
-Teacher clicks "Call"
+Video call ends
         |
         v
-Edge Function: create-daily-room
+Redirect to /lessons/add?classId=xxx
         |
         v
-Daily.co API creates room → Returns room URL
+AddLesson page loads with:
+  - Student info pre-filled
+  - Class details loaded
+  - Quick mode by default
         |
         v
-Store room_id & room_url in classes table
+Teacher fills in:
+  - Quran subject (Tilawah, Tajweed, Hifz)
+  - Surah/Juzz/Ayah progress
+  - Quick ratings (1-5 stars)
+  - Optional comments
         |
         v
-Supabase Realtime notifies student
+Save → Mark class as lesson_added = true
         |
         v
-Student joins → Both in video room
-        |
-        v
-Teacher ends call → Class marked completed
+Redirect to Dashboard/Today Classes
 ```
 
 ---
 
-## Implementation Steps
+## Components to Create
 
-### 1. Daily.co API Key Setup
+### 1. AddLesson Page (Replace Placeholder)
 
-**Action Required**: User must provide their Daily.co API key
-
-- Daily.co offers a free tier with 10,000 minutes/month
-- API key stored securely as a backend secret
-- Used only in edge function (never exposed to frontend)
-
----
-
-### 2. Edge Function: create-daily-room
-
-**New file**: `supabase/functions/create-daily-room/index.ts`
-
-**Purpose**: Securely create Daily.co rooms server-side
-
-**Functionality**:
-- Accepts class_id, teacher_id, student_id
-- Creates a Daily.co room with:
-  - Privacy: private
-  - Expiry: class duration + 30 min buffer
-  - Max participants: 2
-- Stores room_id and room_url in classes table
-- Creates notification for student
-- Returns room URL to teacher
-
-**Request**:
-```json
-{
-  "class_id": "uuid",
-  "teacher_id": "uuid", 
-  "student_id": "uuid"
-}
-```
-
-**Response**:
-```json
-{
-  "room_url": "https://your-domain.daily.co/abc123",
-  "room_id": "abc123"
-}
-```
-
----
-
-### 3. Video Room Component
-
-**New file**: `src/components/video/VideoRoom.tsx`
+**File**: `src/pages/lessons/AddLesson.tsx`
 
 **Features**:
-- Full-screen video interface using @daily-co/daily-js
-- Teacher and student video tiles
-- Controls: Mute/unmute microphone, camera on/off, end call
-- Class timer display (counts up from start)
-- Connection quality indicator
-- Minimized mode for quick reference
+- Reads `classId` from URL query params
+- Pre-loads class and student data
+- Two modes toggle: Quick Mode / Full Mode
+- Form validation with react-hook-form + zod
+- Auto-saves draft locally (optional)
 
-**Component Structure**:
+**Quick Mode Fields** (minimal - for fast entry):
+- Quran subject dropdown
+- Surah selection
+- Ayah range (from - to)
+- Star ratings (3 categories)
+- Comments textarea
+
+**Full Mode Fields** (comprehensive):
+- All Quick Mode fields plus:
+- Juzz number
+- Page range
+- Memorization details (surah, ayah range)
+- Fundamental Islam topic
+- Ethics topic
+- Teaching method
+- Image attachments
+
+---
+
+### 2. Surah Selector Component
+
+**File**: `src/components/lessons/SurahSelector.tsx`
+
+**Features**:
+- Combobox with search for all 114 surahs
+- Shows surah number and name
+- Arabic + English names
+- Recently used surahs at top
+
+---
+
+### 3. Star Rating Component
+
+**File**: `src/components/lessons/StarRating.tsx`
+
+**Features**:
+- Interactive 5-star rating
+- Labels: Concentration, Revision, Progress
+- Touch-friendly for mobile
+
+---
+
+### 4. Lesson Form Hook
+
+**File**: `src/hooks/useLessonForm.ts`
+
+**Purpose**: Manage form state and submission
+
+**Features**:
+- Form validation schema
+- Submit mutation to lessons table
+- Update class `lesson_added` flag
+- Optimistic updates
+
+---
+
+## Data Structures
+
+### Quran Subject Options
 ```text
-VideoRoom
-├── VideoTile (local - teacher)
-├── VideoTile (remote - student)
-├── CallControls
-│   ├── MicToggle
-│   ├── CameraToggle
-│   └── EndCallButton
-├── ClassTimer
-└── ConnectionIndicator
+- Tilawah (Reading)
+- Tajweed (Pronunciation Rules)
+- Hifz (Memorization)
+- Revision
+- Arabic Language
+- Islamic Studies
 ```
 
----
-
-### 4. Video Room Page/Modal
-
-**New file**: `src/pages/ClassRoom.tsx`
-
-**Purpose**: Dedicated page for active video calls
-
-**Features**:
-- Route: `/classroom/:classId`
-- Shows video room component
-- Quick actions overlay (add note, view student info)
-- Graceful disconnect handling
-- Auto-redirect to lesson form on call end
-
----
-
-### 5. Update CallButton Component
-
-**File**: `src/components/classes/CallButton.tsx`
-
-**Changes**:
-- Replace simulated call with edge function call
-- Open video room on successful connection
-- Handle real Daily.co room lifecycle
-- Improve error handling for network issues
-
-**Updated Flow**:
-```text
-1. Teacher clicks "Call"
-2. Call edge function to create room
-3. Show "Creating room..." state
-4. Store room URL in class record
-5. Student receives notification via Realtime
-6. Show "Ringing..." with 40s countdown
-7. Student joins → Both enter video room
-8. Student doesn't join → Show retry/no-answer options
-```
-
----
-
-### 6. Student Notification System
-
-**Mechanism**: Supabase Realtime + notifications table
-
-**Flow**:
-1. Edge function inserts notification for student
-2. Student's app receives real-time notification
-3. Student sees "Incoming call from [Teacher]" UI
-4. Student clicks "Join" → Opens video room
-
-**Note**: For MVP, students will need a separate app or dashboard to receive calls. This phase focuses on the teacher experience.
-
----
-
-### 7. Call State Management
-
-**New file**: `src/hooks/useVideoCall.ts`
-
-**Purpose**: Centralized hook for video call state
-
-**States**:
-- `idle` - No active call
-- `creating` - Creating Daily.co room
-- `ringing` - Waiting for student
-- `connected` - Both in video room
-- `ended` - Call finished
-- `failed` - Error occurred
-
-**Features**:
-- Manages Daily.co call object lifecycle
-- Handles participant events
-- Auto-records attendance on connect
-- Logs all events to call_logs table
+### Surah List
+- All 114 surahs with Arabic and English names
+- Stored as constants file for offline access
 
 ---
 
@@ -202,13 +129,11 @@ VideoRoom
 
 | File | Purpose |
 |------|---------|
-| `supabase/functions/create-daily-room/index.ts` | Edge function to create rooms |
-| `src/components/video/VideoRoom.tsx` | Main video interface |
-| `src/components/video/VideoTile.tsx` | Individual video tile |
-| `src/components/video/CallControls.tsx` | Mute/camera/end buttons |
-| `src/components/video/ClassTimer.tsx` | Duration timer |
-| `src/pages/ClassRoom.tsx` | Video call page |
-| `src/hooks/useVideoCall.ts` | Call state management |
+| `src/pages/lessons/AddLesson.tsx` | Main lesson form page |
+| `src/components/lessons/SurahSelector.tsx` | Searchable surah dropdown |
+| `src/components/lessons/StarRating.tsx` | Rating input component |
+| `src/hooks/useLessonForm.ts` | Form logic and submission |
+| `src/lib/quran-data.ts` | Surah names and metadata |
 
 ---
 
@@ -216,80 +141,112 @@ VideoRoom
 
 | File | Changes |
 |------|---------|
-| `src/components/classes/CallButton.tsx` | Real Daily.co integration |
-| `src/pages/TodayClasses.tsx` | Navigate to video room |
-| `src/App.tsx` | Add /classroom/:classId route |
-| `package.json` | Add @daily-co/daily-js dependency |
+| `src/pages/placeholders.tsx` | Remove AddLesson export |
+| `src/App.tsx` | Update route to new component |
 
 ---
 
-## Dependencies to Add
+## Form Validation Schema
 
-```json
-{
-  "@daily-co/daily-js": "^0.67.0"
-}
+```text
+Required fields (Quick Mode):
+- quran_subject (dropdown)
+- surah (from surah selector)
+- ayah_from (number, 1-286)
+- ayah_to (number, >= ayah_from)
+
+Optional but encouraged:
+- rating_concentration (1-5)
+- rating_revision (1-5)
+- rating_progress (1-5)
+- comments (text)
+
+Full Mode additions:
+- juzz (1-30)
+- page_from (1-604)
+- page_to (>= page_from)
+- memorization fields
+- fundamental_islam
+- ethics
+- method
 ```
 
 ---
 
-## Secret Required
+## UI Layout
 
-**DAILY_API_KEY**: Daily.co REST API key
+### Quick Mode (Default)
+```text
+┌─────────────────────────────────────────────────┐
+│  Add Lesson                          [Full Mode]│
+├─────────────────────────────────────────────────┤
+│  ┌───────────────────────────────────────────┐  │
+│  │  Ahmed Hassan • Tajweed Intermediate      │  │
+│  │  Class: Jan 31, 2026 • 10:00 AM           │  │
+│  └───────────────────────────────────────────┘  │
+│                                                 │
+│  Subject ─────────────────────────────────────  │
+│  [Tajweed                              ▼]       │
+│                                                 │
+│  Surah ───────────────────────────────────────  │
+│  [Al-Baqarah (2)                       ▼]       │
+│                                                 │
+│  Ayah Range ──────────────────────────────────  │
+│  From: [142]     To: [150]                      │
+│                                                 │
+│  Ratings ─────────────────────────────────────  │
+│  Concentration  ★★★★☆                           │
+│  Revision       ★★★★★                           │
+│  Progress       ★★★☆☆                           │
+│                                                 │
+│  Comments ────────────────────────────────────  │
+│  [                                         ]    │
+│  [                                         ]    │
+│                                                 │
+│         [Cancel]              [Save Lesson]     │
+└─────────────────────────────────────────────────┘
+```
 
-- Obtain from: https://dashboard.daily.co/developers
-- Will prompt user to enter via secrets modal
+### Full Mode (Expandable)
+- Shows additional collapsible sections:
+  - Page Range
+  - Memorization Details
+  - Islamic Studies
+  - Teaching Method
+  - Attachments
+
+---
+
+## Database Operations
+
+### On Form Submit
+```text
+1. INSERT into lessons table with all form data
+2. UPDATE classes SET lesson_added = true WHERE id = class_id
+3. UPDATE students SET current_surah, current_juzz (optional)
+4. INVALIDATE queries for today-classes and lessons
+```
 
 ---
 
 ## Technical Details
 
-### Daily.co Room Configuration
+### Pre-filled Data from Class
+When navigating from a completed call:
+- student_id from class
+- class_id from URL
+- teacher_id from auth context
+- course_level from student record
+
+### Surah Data Structure
 ```javascript
 {
-  privacy: "private",
-  properties: {
-    exp: Math.floor(Date.now() / 1000) + (duration + 30) * 60,
-    max_participants: 2,
-    enable_chat: true,
-    enable_prejoin_ui: false,
-    start_video_off: false,
-    start_audio_off: false
-  }
+  number: 1,
+  name: "Al-Fatihah",
+  arabicName: "الفاتحة",
+  ayahCount: 7,
+  juzz: 1
 }
-```
-
-### Video Room Initialization
-```javascript
-const daily = DailyIframe.createCallObject({
-  url: roomUrl,
-  userName: teacher.profile.full_name,
-});
-
-await daily.join();
-```
-
----
-
-## UI Mockup
-
-### Video Room Layout
-```text
-┌─────────────────────────────────────────────┐
-│  ┌─────────────────┐  ┌──────────────────┐  │
-│  │                 │  │                  │  │
-│  │   STUDENT       │  │    TEACHER       │  │
-│  │   VIDEO         │  │    VIDEO         │  │
-│  │                 │  │    (small)       │  │
-│  │                 │  │                  │  │
-│  └─────────────────┘  └──────────────────┘  │
-│                                             │
-│  Ahmed Hassan • Tajweed Intermediate        │
-│  ────────────────────────────────────────   │
-│                                             │
-│     🎤    📷    ⏱️ 12:34    📝    🔴       │
-│    Mute  Camera  Timer    Notes  End Call   │
-└─────────────────────────────────────────────┘
 ```
 
 ---
@@ -298,21 +255,20 @@ await daily.join();
 
 | Scenario | Handling |
 |----------|----------|
-| Room creation fails | Show error, retry option |
-| Student doesn't join in 40s | Show no-answer dialog |
-| Network disconnection | Auto-reconnect attempt, then fallback |
-| Browser permission denied | Show instructions modal |
-| Daily.co quota exceeded | Show upgrade message |
+| No classId in URL | Show student selector instead |
+| Invalid classId | Redirect to today-classes |
+| Lesson already added | Show warning, allow edit |
+| Network error | Save locally, retry |
+| Form validation | Show inline errors |
 
 ---
 
 ## Outcome
 
 After implementation:
-- Teachers can initiate real video calls with one click
-- Video room with professional controls and timer
-- All call events logged for analytics
-- Automatic attendance recording on call connect
-- Graceful handling of no-answer scenarios
-- Clean transition to lesson form after call ends
+- Teachers can record lessons in under 30 seconds (Quick Mode)
+- All lesson data properly tracked in database
+- Classes automatically marked as having lessons added
+- Seamless flow from video call to lesson entry
+- Full audit trail of student progress
 
