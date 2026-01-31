@@ -15,6 +15,7 @@ import { DashboardLayout } from "./components/layout/DashboardLayout";
 // Main Pages
 import Dashboard from "./pages/Dashboard";
 import TodayClasses from "./pages/TodayClasses";
+import ClassRoom from "./pages/ClassRoom";
 import {
   Classes,
   ClassSchedule,
@@ -59,6 +60,9 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+
+            {/* Video Classroom (outside dashboard layout) */}
+            <Route path="/classroom/:classId" element={<ClassRoom />} />
 
             {/* Protected Dashboard Routes */}
             <Route element={<DashboardLayout />}>
