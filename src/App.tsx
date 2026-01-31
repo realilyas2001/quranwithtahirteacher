@@ -21,7 +21,6 @@ import {
   ClassSchedule,
   Students,
   StudentProfile,
-  AddLesson,
   LessonHistory,
   ExaminerRemarks,
   Attendance,
@@ -37,6 +36,7 @@ import {
   Instruction,
   Announcements,
 } from "./pages/placeholders";
+import AddLesson from "./pages/lessons/AddLesson";
 
 import NotFound from "./pages/NotFound";
 
