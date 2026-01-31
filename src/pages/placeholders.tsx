@@ -40,7 +40,7 @@ export const Classes = () => <PlaceholderPage title="Classes" description="Manag
 export const ClassSchedule = () => <PlaceholderPage title="Class Schedule" description="View your weekly calendar with all scheduled classes." />;
 export const Students = () => <PlaceholderPage title="My Students" description="View and manage your assigned students." />;
 export const StudentProfile = () => <PlaceholderPage title="Student Profile" description="Detailed student information and progress." />;
-export const AddLesson = () => <PlaceholderPage title="Add Lesson" description="Record lesson details and student progress." />;
+// AddLesson moved to src/pages/lessons/AddLesson.tsx
 export const LessonHistory = () => <PlaceholderPage title="Lesson History" description="View and filter past lesson records." />;
 export const ExaminerRemarks = () => <PlaceholderPage title="Examiner Remarks" description="View OCA feedback and examiner notes." />;
 export const Attendance = () => <PlaceholderPage title="Attendance" description="Track and manage student attendance." />;
