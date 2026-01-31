@@ -27,7 +27,6 @@ import {
   XCircle,
   Clock,
   PhoneOff,
-  Loader2,
   RefreshCw,
 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -53,7 +52,6 @@ export default function TodayClasses() {
   const [statusFilter, setStatusFilter] = useState<ClassStatus | 'all'>(
     (searchParams.get('filter') as ClassStatus) || 'all'
   );
-  const [callingClassId, setCallingClassId] = useState<string | null>(null);
 
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -98,31 +96,13 @@ export default function TodayClasses() {
   });
 
   const handleCall = async (cls: TodayClass) => {
-    setCallingClassId(cls.id);
-    
-    // Simulate calling - in real app this would connect to Daily.co
-    toast.info(`Calling ${cls.student?.full_name}...`, {
-      description: 'Waiting for student to answer...',
-    });
-
-    // Simulate 3 second wait then show options
-    setTimeout(() => {
-      setCallingClassId(null);
-      // For demo, we'll just update status to in_progress
-      toast.success('Demo: Call connected!', {
-        description: 'In production, this would open the video room.',
-      });
-    }, 3000);
+    // Navigate to video classroom
+    navigate(`/classroom/${cls.id}?autoStart=true`);
   };
 
   const handleStartClass = async (cls: TodayClass) => {
-    try {
-      await updateClassStatus.mutateAsync({ classId: cls.id, status: 'in_progress' });
-      toast.success('Class started!');
-      // In production, this would also open the video room
-    } catch (error) {
-      toast.error('Failed to start class');
-    }
+    // Navigate to classroom and start video call
+    navigate(`/classroom/${cls.id}?autoStart=true`);
   };
 
   const handleEndClass = async (cls: TodayClass) => {
@@ -230,13 +210,8 @@ export default function TodayClasses() {
           {filteredClasses.map((cls) => {
             const status = statusConfig[cls.status];
             const StatusIcon = status.icon;
-            const isCalling = callingClassId === cls.id;
-
             return (
-              <Card key={cls.id} className={cn(
-                "transition-all hover:shadow-md",
-                isCalling && "ring-2 ring-primary animate-pulse"
-              )}>
+              <Card key={cls.id} className="transition-all hover:shadow-md">
                 <CardContent className="p-4">
                   <div className="flex flex-col md:flex-row md:items-center gap-4">
                     {/* Student Info */}
@@ -291,19 +266,9 @@ export default function TodayClasses() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleCall(cls)}
-                            disabled={isCalling}
                           >
-                            {isCalling ? (
-                              <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Ringing...
-                              </>
-                            ) : (
-                              <>
-                                <Phone className="mr-2 h-4 w-4" />
-                                Call
-                              </>
-                            )}
+                            <Phone className="mr-2 h-4 w-4" />
+                            Call
                           </Button>
                           <Button size="sm" onClick={() => handleStartClass(cls)}>
                             <PlayCircle className="mr-2 h-4 w-4" />
