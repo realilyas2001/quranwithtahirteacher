@@ -38,8 +38,6 @@ export function PlaceholderPage({ title, description, icon: Icon = Construction 
 // Individual placeholder pages for each route
 export const Classes = () => <PlaceholderPage title="Classes" description="Manage all your classes, scheduled sessions, and recovery classes." />;
 export const ClassSchedule = () => <PlaceholderPage title="Class Schedule" description="View your weekly calendar with all scheduled classes." />;
-export const Students = () => <PlaceholderPage title="My Students" description="View and manage your assigned students." />;
-export const StudentProfile = () => <PlaceholderPage title="Student Profile" description="Detailed student information and progress." />;
 // AddLesson moved to src/pages/lessons/AddLesson.tsx
 export const LessonHistory = () => <PlaceholderPage title="Lesson History" description="View and filter past lesson records." />;
 export const ExaminerRemarks = () => <PlaceholderPage title="Examiner Remarks" description="View OCA feedback and examiner notes." />;
