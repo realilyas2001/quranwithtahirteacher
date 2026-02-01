@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,12 +9,23 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BookMarked, Loader2, Mail, Lock } from 'lucide-react';
 
 export default function Login() {
-  const { user, signIn, isLoading } = useAuth();
+  const { user, signIn, isLoading, isTeacher, isStudent, roles } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Redirect based on role when user is logged in
+  useEffect(() => {
+    if (user && roles.length > 0) {
+      if (isTeacher) {
+        navigate('/dashboard', { replace: true });
+      } else if (isStudent) {
+        navigate('/student/dashboard', { replace: true });
+      }
+    }
+  }, [user, roles, isTeacher, isStudent, navigate]);
 
   if (isLoading) {
     return (
@@ -24,8 +35,13 @@ export default function Login() {
     );
   }
 
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
+  // Show loading while we determine the role
+  if (user && roles.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,9 +54,8 @@ export default function Login() {
     if (signInError) {
       setError(signInError.message);
       setIsSubmitting(false);
-    } else {
-      navigate('/dashboard');
     }
+    // Navigation will happen via useEffect when roles are loaded
   };
 
   return (
@@ -51,15 +66,15 @@ export default function Login() {
           <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center">
             <BookMarked className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Quran Academy</h1>
-          <p className="text-muted-foreground">Teacher Dashboard</p>
+          <h1 className="text-2xl font-bold text-foreground">Quran With Tahir</h1>
+          <p className="text-muted-foreground">Online Quran Academy</p>
         </div>
 
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
             <CardDescription className="text-center">
-              Sign in to your teacher account
+              Sign in to your account
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -76,7 +91,7 @@ export default function Login() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="teacher@example.com"
+                    placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
