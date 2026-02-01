@@ -164,6 +164,7 @@ export default function TodayClasses() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
+            aria-label="Search students by name"
           />
         </div>
         <DropdownMenu>

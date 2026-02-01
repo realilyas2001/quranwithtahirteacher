@@ -106,11 +106,22 @@ export function VideoRoom({
 
       case 'failed':
         return (
-          <div className="flex flex-col items-center justify-center h-full gap-4">
+          <div className="flex flex-col items-center justify-center h-full gap-4 px-4 text-center">
             <AlertCircle className="h-12 w-12 text-destructive" />
-            <div className="text-center">
+            <div className="space-y-2">
               <h2 className="text-xl font-semibold text-destructive">Connection Failed</h2>
-              <p className="text-muted-foreground">{error || 'Unable to connect to the video call'}</p>
+              <p className="text-muted-foreground max-w-md">
+                {error || 'Unable to connect to the video call. Please check your internet connection and try again.'}
+              </p>
+            </div>
+            <div className="space-y-2 text-sm text-muted-foreground bg-muted/50 p-4 rounded-lg max-w-md">
+              <p className="font-medium">Troubleshooting tips:</p>
+              <ul className="list-disc list-inside space-y-1 text-left">
+                <li>Check your internet connection</li>
+                <li>Allow camera and microphone permissions</li>
+                <li>Try refreshing the page</li>
+                <li>Close other video call applications</li>
+              </ul>
             </div>
             <Button onClick={startCall}>Try Again</Button>
           </div>
@@ -219,7 +230,10 @@ export function VideoRoom({
       </div>
 
       {/* Controls */}
-      <div className="px-4 py-4 border-t bg-muted/50">
+      <div 
+        className="px-4 py-4 border-t bg-muted/50"
+        style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+      >
         <CallControls
           isMicOn={isMicOn}
           isCameraOn={isCameraOn}
