@@ -1,165 +1,114 @@
 
 
-# Phase 8: Attendance Management
+# Phase 9: Communication & Tasks
 
 ## Overview
 
-Build a comprehensive attendance tracking system that allows teachers to record, view, and manage student attendance for their classes. This phase replaces the placeholder `/attendance` page with a fully functional implementation that integrates with existing class and student data.
+Build a comprehensive communication and task management system that enables teachers to:
+- View and manage assigned tasks (personal and admin-assigned)
+- Submit and track complaints with attachments
+- Share suggestions with the academy
+- View feedback from students and admin
+- Access announcements, rules, instructions, and improvement items
+
+This phase replaces 11 placeholder pages with fully functional implementations.
 
 ---
 
 ## Architecture
 
 ```text
-Teacher navigates to /attendance
+Teacher Dashboard Communication Hub
         |
-        v
-Attendance Page loads:
-  - Summary stats (Present, Absent, Late, No Answer)
-  - Date range and student filters
-  - Tabular/Card list of attendance records
-  - Bulk marking actions for today's classes
+        +-- Tasks (/tasks)
+        |   - View assigned and personal tasks
+        |   - Update task status
+        |   - Submit completion proof
         |
-        v
-Teacher records attendance:
-  - Quick mark from Today's Classes
-  - Edit existing records
-  - Add notes for context
+        +-- Complaints (/complaints)
+        |   - Submit new complaints
+        |   - Track complaint status
+        |   - View admin responses
         |
-        v
-Attendance syncs with Classes:
-  - Updates when class status changes
-  - Reflected in student profiles
+        +-- Suggestions (/suggestions)
+        |   - Submit improvement ideas
+        |   - Track suggestion status
+        |
+        +-- Feedback (/feedback)
+        |   - View received feedback
+        |   - Respond to feedback
+        |
+        +-- Announcements (/announcements)
+        |   - View active announcements
+        |   - Mark as read
+        |
+        +-- Improvement (/improvement)
+        |   - View improvement items
+        |   - Mark as completed with evidence
+        |
+        +-- Rules (/rules)
+        |   - View academy policies
+        |   - PDF document access
+        |
+        +-- Instructions (/instruction)
+            - How-to guides
+            - Video tutorials
 ```
 
 ---
 
-## User Flow
+## Database Tables Used
 
-### Attendance Page (`/attendance`)
-1. Teacher sees summary statistics for attendance (total present, absent, late, leave, no answer)
-2. Date range filter allows viewing specific periods
-3. Student filter narrows to specific student's attendance
-4. Each row shows student, class date/time, attendance status, and notes
-5. Quick edit allows changing status or adding notes
-6. Bulk actions for marking today's unmarked classes
-
-### Recording Attendance Flow
-1. After a class ends or is marked as missed/no_answer, attendance is auto-suggested
-2. Teacher can manually record or adjust attendance
-3. Notes field captures any special circumstances (late reason, leave type, etc.)
-4. Changes are instantly reflected across the system
-
----
-
-## Components to Create
-
-### 1. Attendance Page
-
-**File**: `src/pages/attendance/Attendance.tsx`
-
-**Features**:
-- Summary stats cards (Present, Absent, Late, Leave, No Answer rates)
-- Date range picker for filtering
-- Student dropdown filter  
-- Status filter (multi-select)
-- Attendance records table/card list
-- Empty state for no records
-- Loading skeletons
-
-**Columns/Fields**:
-- Student (avatar, name, country)
-- Class Date & Time
-- Status badge (with color-coded pills using existing CSS)
-- Note (if any)
-- Actions (Edit, View Class)
-
----
-
-### 2. Attendance Record Card
-
-**File**: `src/components/attendance/AttendanceCard.tsx`
-
-**Purpose**: Reusable card for attendance display in mobile/card views
-
-**Features**:
-- Student avatar and name
-- Class date/time display
-- Status pill (using existing attendance-present, attendance-absent, etc. CSS classes)
-- Note display (collapsible if long)
-- Quick action buttons
-
----
-
-### 3. Attendance Stats Component
-
-**File**: `src/components/attendance/AttendanceStats.tsx`
-
-**Purpose**: Summary statistics header
-
-**Features**:
-- Total records count
-- Present count with percentage
-- Absent count with percentage
-- Late count
-- Leave count
-- Average attendance rate
-
----
-
-### 4. Attendance Edit Dialog
-
-**File**: `src/components/attendance/AttendanceEditDialog.tsx`
-
-**Purpose**: Modal for editing attendance records
-
-**Features**:
-- Status dropdown (Present, Absent, Late, Leave, No Answer)
-- Note textarea
-- Save/Cancel actions
-- Validation
-
----
-
-### 5. Quick Attendance Marker
-
-**File**: `src/components/attendance/QuickAttendanceMarker.tsx`
-
-**Purpose**: Bulk marking for today's classes without attendance records
-
-**Features**:
-- List of today's completed/ended classes without attendance
-- Quick status buttons for each
-- Batch mark all as present option
-- Collapsible section
-
----
-
-### 6. useAttendance Hook
-
-**File**: `src/hooks/useAttendance.ts`
-
-**Purpose**: Data fetching and mutations for attendance
-
-**Features**:
-- Fetch attendance with filters (date range, status, student)
-- Create attendance record mutation
-- Update attendance record mutation
-- Statistics calculation queries
-- Auto-create attendance when class ends
+| Table | Purpose |
+|-------|---------|
+| tasks | Teacher tasks (assigned + personal) |
+| complaints | Teacher complaints with attachments |
+| suggestions | Teacher suggestions |
+| feedback | Feedback from students/admin |
+| announcements | System announcements |
+| announcement_reads | Track read status |
+| improvements | Improvement items from examiners |
+| rules_documents | Academy policies |
+| instructions | How-to guides |
 
 ---
 
 ## Files to Create
 
+### Pages
+
 | File | Purpose |
 |------|---------|
-| `src/pages/attendance/Attendance.tsx` | Main attendance page |
-| `src/components/attendance/AttendanceCard.tsx` | Reusable attendance card |
-| `src/components/attendance/AttendanceStats.tsx` | Summary statistics |
-| `src/components/attendance/AttendanceEditDialog.tsx` | Edit modal |
-| `src/components/attendance/QuickAttendanceMarker.tsx` | Bulk marking component |
-| `src/hooks/useAttendance.ts` | Data fetching hook |
+| `src/pages/tasks/Tasks.tsx` | Tasks management page |
+| `src/pages/complaints/Complaints.tsx` | Complaints submission & tracking |
+| `src/pages/suggestions/Suggestions.tsx` | Suggestions page |
+| `src/pages/feedback/Feedback.tsx` | Feedback viewing page |
+| `src/pages/announcements/Announcements.tsx` | Announcements page |
+| `src/pages/improvement/Improvement.tsx` | Improvement tracking page |
+| `src/pages/rules/Rules.tsx` | Rules documents page |
+| `src/pages/instructions/Instructions.tsx` | Instructions & guides page |
+
+### Components
+
+| File | Purpose |
+|------|---------|
+| `src/components/tasks/TaskCard.tsx` | Reusable task display card |
+| `src/components/tasks/TaskDialog.tsx` | Create/edit task dialog |
+| `src/components/communication/ComplaintDialog.tsx` | Submit complaint dialog |
+| `src/components/communication/SuggestionDialog.tsx` | Submit suggestion dialog |
+| `src/components/communication/FeedbackCard.tsx` | Feedback display card |
+| `src/components/communication/AnnouncementCard.tsx` | Announcement display |
+| `src/components/communication/ImprovementCard.tsx` | Improvement item card |
+| `src/components/communication/DocumentCard.tsx` | Rules/instruction card |
+
+### Hooks
+
+| File | Purpose |
+|------|---------|
+| `src/hooks/useTasks.ts` | Task data fetching & mutations |
+| `src/hooks/useCommunication.ts` | Complaints, suggestions, feedback hooks |
+| `src/hooks/useAnnouncements.ts` | Announcements fetching & read marking |
+| `src/hooks/useDocuments.ts` | Rules & instructions fetching |
 
 ---
 
@@ -167,117 +116,171 @@ Attendance syncs with Classes:
 
 | File | Changes |
 |------|---------|
-| `src/pages/placeholders.tsx` | Remove Attendance export |
-| `src/App.tsx` | Update route to new component |
-| `src/pages/TodayClasses.tsx` | Add attendance marking after class ends |
+| `src/pages/placeholders.tsx` | Remove replaced exports |
+| `src/App.tsx` | Update routes to new components |
 
 ---
 
-## Data Fetching
+## Feature Details
 
-### Attendance List Query
-```text
-SELECT attendance.*, 
-       student:students(id, full_name, avatar_url, country, country_code),
-       class:classes(id, scheduled_date, start_time, duration_minutes)
-FROM attendance
-WHERE teacher_id = current_teacher_id
-  AND recorded_at BETWEEN start_date AND end_date
-  AND (student_id = filter_student OR filter_student IS NULL)
-  AND (status = filter_status OR filter_status IS NULL)
-ORDER BY recorded_at DESC
-```
+### 1. Tasks Page (`/tasks`)
 
-### Statistics Query
-```text
-SELECT 
-  COUNT(*) as total,
-  COUNT(*) FILTER (WHERE status = 'present') as present,
-  COUNT(*) FILTER (WHERE status = 'absent') as absent,
-  COUNT(*) FILTER (WHERE status = 'late') as late,
-  COUNT(*) FILTER (WHERE status = 'leave') as leave,
-  COUNT(*) FILTER (WHERE status = 'no_answer') as no_answer
-FROM attendance
-WHERE teacher_id = current_teacher_id
-  AND recorded_at >= date_range_start
-```
+**Features**:
+- Tabbed view: All, Pending, In Progress, Completed
+- Filter by due date, personal vs assigned
+- Create personal task button
+- Task card with status, due date, description
+- Update status with proof upload for completion
+- Overdue indicator for past due tasks
 
-### Create/Update Attendance
-```text
--- Create
-INSERT INTO attendance (class_id, teacher_id, student_id, status, note)
-VALUES (class_id, teacher_id, student_id, status, note)
+**Task Card Display**:
+- Title and description
+- Status pill (pending/in_progress/completed)
+- Due date with overdue highlighting
+- Assigned by indicator (if admin-assigned)
+- Personal task badge
+- Quick status update buttons
 
--- Update
-UPDATE attendance SET status = new_status, note = new_note
-WHERE id = attendance_id AND teacher_id = current_teacher_id
-```
+### 2. Complaints Page (`/complaints`)
+
+**Features**:
+- Submit new complaint button
+- List of submitted complaints
+- Status tracking (open/under_review/resolved/closed)
+- View admin responses
+- Attachment support
+
+**Complaint Dialog**:
+- Subject field
+- Description textarea
+- File attachment (optional)
+- Submit button
+
+### 3. Suggestions Page (`/suggestions`)
+
+**Features**:
+- Submit new suggestion button
+- List of submitted suggestions
+- Status tracking
+- View admin responses
+
+**Suggestion Dialog**:
+- Title field
+- Description textarea
+- Submit button
+
+### 4. Feedback Page (`/feedback`)
+
+**Features**:
+- View feedback received from students/admin
+- Rating display (if provided)
+- Add teacher response
+- Filter by from_type (student/admin)
+
+### 5. Announcements Page (`/announcements`)
+
+**Features**:
+- List of active announcements
+- Priority indicator (normal/high/urgent)
+- Auto-mark as read on view
+- Expandable content for long announcements
+- Expiry indicator
+
+### 6. Improvement Page (`/improvement`)
+
+**Features**:
+- View improvement items assigned
+- Mark as completed with evidence URL
+- Filter: Pending vs Completed
+- Required action display
+- Examiner attribution
+
+### 7. Rules Page (`/rules`)
+
+**Features**:
+- Categorized list of rule documents
+- PDF viewer/download
+- Search functionality
+- Expandable content sections
+
+### 8. Instructions Page (`/instruction`)
+
+**Features**:
+- Categorized how-to guides
+- Video tutorials (embed support)
+- Search functionality
+- Ordered display
 
 ---
 
 ## UI Layouts
 
-### Attendance Page - Desktop
+### Tasks Page
 ```text
 +----------------------------------------------------------+
-|  Attendance                                               |
-|  Track and manage student attendance                      |
+|  Tasks                                    [+ New Task]    |
+|  Manage your personal and assigned tasks                  |
 +----------------------------------------------------------+
-|  +-----------+ +-----------+ +-----------+ +-----------+  |
-|  | Present   | | Absent    | | Late      | | Leave     |  |
-|  | 145 (82%) | | 18 (10%)  | | 10 (6%)   | | 4 (2%)    |  |
-|  +-----------+ +-----------+ +-----------+ +-----------+  |
+|  [All] [Pending (3)] [In Progress (1)] [Completed]       |
 +----------------------------------------------------------+
-|  [Date Range ▼] [Student ▼] [Status ▼] [Clear Filters]   |
+|  Filter: [Personal ▼] [Due Date ▼]        [Clear]        |
 +----------------------------------------------------------+
 |                                                           |
-|  Quick Mark: 3 classes today need attendance              |
-|  [Mark All Present] or mark individually below            |
-|                                                           |
-+----------------------------------------------------------+
 |  +------------------------------------------------------+ |
-|  | Avatar | Ahmed Hassan     | Jan 31 | 10:00 AM        | |
-|  |        | Saudi Arabia     | [Present]          [Edit]| |
+|  | [ ] Complete student progress reports                 | |
+|  |     Due: Feb 3, 2026 (2 days)           [Pending]    | |
+|  |     Assigned by: Admin                               | |
+|  |     [Start] [Complete]                               | |
 |  +------------------------------------------------------+ |
-|  | Avatar | Fatima Ali       | Jan 31 | 11:00 AM        | |
-|  |        | UAE              | [Late] Late 5 min  [Edit]| |
-|  +------------------------------------------------------+ |
-|  | Avatar | Omar Khan        | Jan 30 | 09:00 AM        | |
-|  |        | Pakistan         | [Absent]           [Edit]| |
+|  | [✓] Review lesson plans                 [Completed]   | |
+|  |     Completed: Jan 30, 2026                          | |
+|  |     Personal Task                                    | |
 |  +------------------------------------------------------+ |
 +----------------------------------------------------------+
 ```
 
-### Attendance Edit Dialog
+### Complaints Page
 ```text
-+------------------------------------------+
-|  Edit Attendance                    [X]   |
-+------------------------------------------+
-|                                          |
-|  Student: Ahmed Hassan                   |
-|  Class: January 31, 2026 @ 10:00 AM      |
-|                                          |
-|  Status ────────────────────────────────  |
-|  [Present ▼]                             |
-|                                          |
-|  Note ──────────────────────────────────  |
-|  [Student joined on time today      ]    |
-|  [                                  ]    |
-|                                          |
-|       [Cancel]            [Save Changes] |
-+------------------------------------------+
++----------------------------------------------------------+
+|  Complaints                          [+ Submit Complaint] |
+|  Submit and track your complaints                         |
++----------------------------------------------------------+
+|                                                           |
+|  +------------------------------------------------------+ |
+|  | Technical Issue with Video Platform        [Open]    | |
+|  | Submitted: Jan 28, 2026                              | |
+|  | Video quality dropping during classes...             | |
+|  |                                                      | |
+|  | No response yet                                      | |
+|  +------------------------------------------------------+ |
+|  | Scheduling Conflict                     [Resolved]   | |
+|  | Submitted: Jan 20, 2026                              | |
+|  |                                                      | |
+|  | Admin Response:                                      | |
+|  | Schedule has been adjusted as requested...           | |
+|  +------------------------------------------------------+ |
++----------------------------------------------------------+
 ```
 
-### Quick Attendance Marker (Collapsed Section)
+### Announcements Page
 ```text
 +----------------------------------------------------------+
-|  ▼ Classes Needing Attendance (3)         [Mark All ✓]   |
+|  Announcements                                            |
+|  Important updates from administration                    |
 +----------------------------------------------------------+
-|  Ahmed Hassan • 10:00 AM • Completed                      |
-|  [Present] [Absent] [Late] [Leave] [No Answer]           |
-|  -------------------------------------------------------- |
-|  Fatima Ali • 11:00 AM • Completed                        |
-|  [Present] [Absent] [Late] [Leave] [No Answer]           |
+|                                                           |
+|  +------------------------------------------------------+ |
+|  | [HIGH] New Curriculum Update             [New]       | |
+|  | Feb 1, 2026                                          | |
+|  |                                                      | |
+|  | Important changes to the Tajweed curriculum will     | |
+|  | take effect starting next month...        [Read More]| |
+|  +------------------------------------------------------+ |
+|  | [NORMAL] Holiday Schedule Reminder                   | |
+|  | Jan 28, 2026                              [Read]     | |
+|  |                                                      | |
+|  | Classes will be suspended from Feb 10-12...          | |
+|  +------------------------------------------------------+ |
 +----------------------------------------------------------+
 ```
 
@@ -285,44 +288,49 @@ WHERE id = attendance_id AND teacher_id = current_teacher_id
 
 ## Technical Details
 
-### Status Color Coding (Using Existing CSS)
+### Status Color Coding
+
+**Task Status**:
+- pending: Yellow/Warning
+- in_progress: Blue/Info
+- completed: Green/Success
+
+**Complaint/Suggestion Status**:
+- open: Blue (info)
+- under_review: Yellow (warning)
+- resolved: Green (success)
+- closed: Gray (muted)
+
+**Announcement Priority**:
+- normal: Default styling
+- high: Orange/warning background
+- urgent: Red/destructive background
+
+### Data Queries
+
+**Tasks Query**:
 ```text
-- present: attendance-present (green)
-- absent: attendance-absent (red)
-- late: attendance-late (orange/yellow)
-- leave: attendance-leave (blue)
-- no_answer: attendance-no-answer (gray)
+SELECT * FROM tasks
+WHERE teacher_id = current_teacher_id
+ORDER BY 
+  CASE WHEN status = 'pending' THEN 0
+       WHEN status = 'in_progress' THEN 1
+       ELSE 2 END,
+  due_date ASC NULLS LAST
 ```
 
-### Date Range Presets
-- Today
-- This Week  
-- Last 7 Days
-- This Month
-- Last 30 Days
-- Custom Range
-
-### Auto-Attendance Logic
-When a class status changes to:
-- `completed` → Suggest marking as "present"
-- `missed` → Suggest marking as "absent"
-- `no_answer` → Suggest marking as "no_answer"
-
----
-
-## Integration Points
-
-### Today's Classes Page
-- After marking class as "completed", prompt to record attendance
-- Add attendance status indicator to class cards
-
-### Student Profile Page
-- Show attendance summary in Overview tab
-- Link to filtered attendance records
-
-### Class Card Component
-- Display attendance status if recorded
-- Quick attendance action for completed classes
+**Announcements Query**:
+```text
+SELECT announcements.*, 
+       EXISTS(SELECT 1 FROM announcement_reads 
+              WHERE announcement_id = announcements.id 
+              AND user_id = current_user_id) as is_read
+FROM announcements
+WHERE is_active = true
+  AND (target_role IS NULL OR target_role = 'teacher')
+  AND (expires_at IS NULL OR expires_at > now())
+ORDER BY priority DESC, published_at DESC
+```
 
 ---
 
@@ -330,34 +338,51 @@ When a class status changes to:
 
 | Scenario | Handling |
 |----------|----------|
-| No attendance records | Show "No records" empty state with context message |
-| Failed to load | Show error state with retry button |
-| Update fails | Show error toast, keep dialog open |
-| Duplicate attendance for same class | Prevent creation, offer to update existing |
+| No tasks found | Show "No tasks" empty state |
+| Failed to submit complaint | Show error toast, keep dialog open |
+| No announcements | Show "No announcements" message |
+| File upload fails | Show error with retry option |
+| Network error | Show retry button |
 
 ---
 
 ## Mobile Responsiveness
 
-### Attendance Page
-- **Desktop**: Full table with all columns
-- **Tablet**: Reduced columns, key info only
-- **Mobile**: Card-based list view using AttendanceCard component
+- **Desktop**: Full layouts with sidebars
+- **Tablet**: Condensed cards, collapsible filters
+- **Mobile**: Stack layout, drawer for filters/forms
 
-### Quick Marker
-- **Desktop**: Horizontal button row for statuses
-- **Mobile**: Dropdown selector instead of buttons
+---
+
+## Implementation Order
+
+1. **useTasks hook** - Task data fetching and mutations
+2. **Tasks page** - Main task management (highest priority)
+3. **useAnnouncements hook** - Announcement fetching
+4. **Announcements page** - View announcements
+5. **useCommunication hook** - Complaints, suggestions, feedback
+6. **Complaints page** - Submit and track complaints
+7. **Suggestions page** - Submit suggestions
+8. **Feedback page** - View feedback
+9. **Improvement page** - Improvement tracking
+10. **useDocuments hook** - Rules and instructions
+11. **Rules page** - Academy policies
+12. **Instructions page** - How-to guides
+13. **Update App.tsx** - New routes
+14. **Clean up placeholders.tsx** - Remove replaced exports
 
 ---
 
 ## Outcome
 
 After implementation:
-- Teachers can easily track and manage student attendance
-- Quick marking from Today's Classes streamlines workflow
-- Statistics provide at-a-glance attendance health
-- Filtering enables finding specific records quickly
-- Integration with class status ensures data consistency
-- Mobile-friendly design for on-the-go access
-- Foundation for attendance reports and analytics
+- Teachers can manage all their tasks in one place
+- Easy complaint submission with attachment support
+- Suggestion sharing for academy improvement
+- View and respond to feedback
+- Stay updated with announcements
+- Track improvement items with evidence
+- Access academy rules and guides
+- Mobile-friendly design for all pages
+- Consistent UI patterns across all communication features
 
