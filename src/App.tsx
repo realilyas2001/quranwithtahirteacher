@@ -33,14 +33,12 @@ import Improvement from "./pages/improvement/Improvement";
 import Rules from "./pages/rules/Rules";
 import Instructions from "./pages/instructions/Instructions";
 
-// Remaining Placeholders
-import {
-  LessonHistory,
-  ExaminerRemarks,
-  Reminder,
-  Salary,
-  Deductions,
-} from "./pages/placeholders";
+// Phase 10: Remaining Pages
+import LessonHistory from "./pages/lessons/LessonHistory";
+import ExaminerRemarks from "./pages/lessons/ExaminerRemarks";
+import Reminders from "./pages/reminders/Reminders";
+import Salary from "./pages/salary/Salary";
+import Deductions from "./pages/salary/Deductions";
 
 import NotFound from "./pages/NotFound";
 
@@ -83,7 +81,7 @@ const App = () => (
               <Route path="/lessons/examiner" element={<ExaminerRemarks />} />
               
               <Route path="/attendance" element={<Attendance />} />
-              <Route path="/reminder" element={<Reminder />} />
+              <Route path="/reminder" element={<Reminders />} />
               
               {/* Phase 9: Communication & Tasks */}
               <Route path="/tasks" element={<Tasks />} />
@@ -95,7 +93,7 @@ const App = () => (
               <Route path="/rules" element={<Rules />} />
               <Route path="/instruction" element={<Instructions />} />
               
-              {/* Salary & Deductions (still placeholder) */}
+              {/* Phase 10: Salary & Deductions */}
               <Route path="/salary" element={<Salary />} />
               <Route path="/deductions" element={<Deductions />} />
             </Route>
