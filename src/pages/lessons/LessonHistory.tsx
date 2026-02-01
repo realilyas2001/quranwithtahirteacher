@@ -8,10 +8,11 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Loader2, BookOpen, Search, X } from 'lucide-react';
+import { BookOpen, Search, X } from 'lucide-react';
 import { useLessons } from '@/hooks/useLessons';
 import { LessonCard } from '@/components/lessons/LessonCard';
 import { LessonDetailsDialog } from '@/components/lessons/LessonDetailsDialog';
+import { LessonCardSkeleton } from '@/components/skeletons/LessonCardSkeleton';
 import type { Tables } from '@/integrations/supabase/types';
 
 type Lesson = Tables<'lessons'> & {
@@ -67,8 +68,16 @@ export default function LessonHistory() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Lesson History</h1>
+          <p className="text-muted-foreground">View and filter past lesson records</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <LessonCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
   }
@@ -92,6 +101,7 @@ export default function LessonHistory() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
+            aria-label="Search lessons by student name, surah, or comments"
           />
         </div>
 

@@ -37,6 +37,7 @@ export function CallControls({
               !isMicOn && 'bg-destructive/80 hover:bg-destructive'
             )}
             onClick={onToggleMic}
+            aria-label={isMicOn ? 'Mute microphone' : 'Unmute microphone'}
           >
             {isMicOn ? <Mic className="h-5 w-5" /> : <MicOff className="h-5 w-5" />}
           </Button>
@@ -56,6 +57,7 @@ export function CallControls({
               !isCameraOn && 'bg-destructive/80 hover:bg-destructive'
             )}
             onClick={onToggleCamera}
+            aria-label={isCameraOn ? 'Turn off camera' : 'Turn on camera'}
           >
             {isCameraOn ? <Video className="h-5 w-5" /> : <VideoOff className="h-5 w-5" />}
           </Button>
@@ -73,6 +75,7 @@ export function CallControls({
               variant="secondary"
               className="rounded-full h-12 w-12 p-0"
               onClick={onAddNote}
+              aria-label="Add quick note"
             >
               <FileText className="h-5 w-5" />
             </Button>
@@ -89,6 +92,7 @@ export function CallControls({
               variant="secondary"
               className="rounded-full h-12 w-12 p-0"
               onClick={onToggleMinimize}
+              aria-label={isMinimized ? 'Maximize video call' : 'Minimize video call'}
             >
               {isMinimized ? <Maximize2 className="h-5 w-5" /> : <Minimize2 className="h-5 w-5" />}
             </Button>
@@ -106,6 +110,7 @@ export function CallControls({
             variant="destructive"
             className="rounded-full h-12 w-12 p-0 bg-destructive hover:bg-destructive/90"
             onClick={onEndCall}
+            aria-label="End call"
           >
             <PhoneOff className="h-5 w-5" />
           </Button>

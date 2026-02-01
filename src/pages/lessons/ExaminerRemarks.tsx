@@ -8,9 +8,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Loader2, MessageSquare, X } from 'lucide-react';
+import { MessageSquare, X } from 'lucide-react';
 import { useExaminerRemarks } from '@/hooks/useExaminerRemarks';
 import { RemarkCard } from '@/components/lessons/RemarkCard';
+import { RemarkCardSkeleton } from '@/components/skeletons/RemarkCardSkeleton';
 
 export default function ExaminerRemarks() {
   const { remarks, students, stats, isLoading, respondToRemark } = useExaminerRemarks();
@@ -47,8 +48,16 @@ export default function ExaminerRemarks() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Examiner Remarks</h1>
+          <p className="text-muted-foreground">View and respond to OCA feedback and examiner notes</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <RemarkCardSkeleton key={i} />
+          ))}
+        </div>
       </div>
     );
   }

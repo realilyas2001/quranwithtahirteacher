@@ -1,16 +1,29 @@
 import React from 'react';
-import { Loader2, DollarSign } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
 import { useSalary } from '@/hooks/useSalary';
 import { SalarySummary } from '@/components/salary/SalarySummary';
 import { SalaryCard } from '@/components/salary/SalaryCard';
+import { SalaryCardSkeleton, SalarySummarySkeleton } from '@/components/skeletons/SalaryCardSkeleton';
 
 export default function Salary() {
   const { salaryRecords, currentSalary, isLoading } = useSalary();
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Salary</h1>
+          <p className="text-muted-foreground">View your salary records and payment history</p>
+        </div>
+        <SalarySummarySkeleton />
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">Payment History</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SalaryCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
