@@ -60,6 +60,7 @@ import StudentRequests from "./pages/student/Requests";
 import StudentAnnouncements from "./pages/student/Announcements";
 import StudentProfile2 from "./pages/student/Profile";
 import StudentSettings from "./pages/student/Settings";
+import StudentClassRoom from "./pages/student/StudentClassRoom";
 import StudentHelp from "./pages/student/Help";
 
 import NotFound from "./pages/NotFound";
@@ -86,8 +87,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* Video Classroom (outside dashboard layout) */}
+            {/* Video Classrooms (outside dashboard layouts) */}
             <Route path="/classroom/:classId" element={<ClassRoom />} />
+            <Route path="/student/classroom/:classId" element={<StudentClassRoom />} />
 
             {/* Protected Teacher Dashboard Routes */}
             <Route element={<DashboardLayout />}>

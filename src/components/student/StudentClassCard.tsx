@@ -58,12 +58,8 @@ export function StudentClassCard({ classData, compact = false, showCountdown = f
   const countdown = getCountdown();
 
   const handleJoinClass = () => {
-    if (classData.call_room_url) {
-      window.open(classData.call_room_url, '_blank');
-    } else {
-      // Navigate to classroom to wait for call
-      navigate(`/classroom/${classData.id}`);
-    }
+    // Navigate to student classroom
+    navigate(`/student/classroom/${classData.id}?autoJoin=${status === 'in_progress'}`);
   };
 
   if (compact) {

@@ -6,6 +6,7 @@ import { DashboardHeader } from './DashboardHeader';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SkipLink } from '@/components/ui/skip-link';
 import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { IncomingCallProvider } from '@/contexts/IncomingCallContext';
 import { Loader2 } from 'lucide-react';
 
 export function StudentLayout() {
@@ -33,23 +34,25 @@ export function StudentLayout() {
   }
 
   return (
-    <SidebarProvider defaultOpen={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <SkipLink />
-      <div className="min-h-screen flex w-full bg-background">
-        <StudentSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <DashboardHeader />
-          <main 
-            id="main-content" 
-            className="flex-1 overflow-auto p-4 md:p-6"
-            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
-          >
-            <ErrorBoundary>
-              <Outlet />
-            </ErrorBoundary>
-          </main>
+    <IncomingCallProvider>
+      <SidebarProvider defaultOpen={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SkipLink />
+        <div className="min-h-screen flex w-full bg-background">
+          <StudentSidebar />
+          <div className="flex-1 flex flex-col min-w-0">
+            <DashboardHeader />
+            <main 
+              id="main-content" 
+              className="flex-1 overflow-auto p-4 md:p-6"
+              style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+            >
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+            </main>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </IncomingCallProvider>
   );
 }
