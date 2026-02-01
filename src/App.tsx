@@ -12,6 +12,9 @@ import Register from "./pages/auth/Register";
 // Dashboard Layout
 import { DashboardLayout } from "./components/layout/DashboardLayout";
 
+// Public Pages
+import Landing from "./pages/Landing";
+
 // Main Pages
 import Dashboard from "./pages/Dashboard";
 import TodayClasses from "./pages/TodayClasses";
@@ -60,6 +63,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
@@ -98,8 +102,6 @@ const App = () => (
               <Route path="/deductions" element={<Deductions />} />
             </Route>
 
-            {/* Redirects */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
