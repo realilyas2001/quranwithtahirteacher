@@ -3,9 +3,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Bell, Video, Accessibility, Globe } from 'lucide-react';
+import { Bell, Video, Accessibility, Globe, Loader2 } from 'lucide-react';
+import { useStudentSettings } from '@/hooks/useStudentSettings';
+
+const timezones = [
+  { value: 'UTC', label: 'UTC' },
+  { value: 'America/New_York', label: 'Eastern Time' },
+  { value: 'America/Los_Angeles', label: 'Pacific Time' },
+  { value: 'Europe/London', label: 'London' },
+  { value: 'Asia/Dubai', label: 'Dubai' },
+  { value: 'Asia/Karachi', label: 'Karachi' },
+  { value: 'Asia/Kolkata', label: 'Mumbai' },
+  { value: 'Asia/Riyadh', label: 'Riyadh' },
+];
 
 export default function Settings() {
+  const { settings, isLoading, updateSettings, isUpdating } = useStudentSettings();
+
+  const handleNotificationChange = (key: string, value: boolean) => {
+    updateSettings({
+      notification_prefs: {
+        ...settings.notification_prefs,
+        [key]: value,
+      },
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -20,21 +51,46 @@ export default function Settings() {
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
               Notifications
+              {isUpdating && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
             </CardTitle>
             <CardDescription>Configure how you receive notifications</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="email-notif">Email Notifications</Label>
-              <Switch id="email-notif" defaultChecked />
+              <Switch 
+                id="email-notif" 
+                checked={settings.notification_prefs?.email ?? true}
+                onCheckedChange={(v) => handleNotificationChange('email', v)}
+              />
             </div>
             <div className="flex items-center justify-between">
               <Label htmlFor="push-notif">Push Notifications</Label>
-              <Switch id="push-notif" defaultChecked />
+              <Switch 
+                id="push-notif" 
+                checked={settings.notification_prefs?.push ?? true}
+                onCheckedChange={(v) => handleNotificationChange('push', v)}
+              />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="class-reminders">Class Reminders</Label>
-              <Switch id="class-reminders" defaultChecked />
+              <div>
+                <Label htmlFor="reminder-time">Class Reminder</Label>
+                <p className="text-xs text-muted-foreground">How early to remind you</p>
+              </div>
+              <Select 
+                value={String(settings.notification_prefs?.reminder_minutes ?? 15)}
+                onValueChange={(v) => handleNotificationChange('reminder_minutes', parseInt(v) as any)}
+              >
+                <SelectTrigger className="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5 minutes</SelectItem>
+                  <SelectItem value="15">15 minutes</SelectItem>
+                  <SelectItem value="30">30 minutes</SelectItem>
+                  <SelectItem value="60">1 hour</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
@@ -51,11 +107,22 @@ export default function Settings() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="camera-default">Camera on by default</Label>
-              <Switch id="camera-default" defaultChecked />
+              <Switch 
+                id="camera-default" 
+                checked={settings.video_pref ?? true}
+                onCheckedChange={(v) => updateSettings({ video_pref: v })}
+              />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="low-bandwidth">Low bandwidth mode</Label>
-              <Switch id="low-bandwidth" />
+              <div>
+                <Label htmlFor="low-bandwidth">Low bandwidth mode</Label>
+                <p className="text-xs text-muted-foreground">Use audio-only to save data</p>
+              </div>
+              <Switch 
+                id="low-bandwidth" 
+                checked={settings.low_bandwidth_mode ?? false}
+                onCheckedChange={(v) => updateSettings({ low_bandwidth_mode: v })}
+              />
             </div>
           </CardContent>
         </Card>
@@ -71,8 +138,14 @@ export default function Settings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="accessibility-mode">Accessibility Mode</Label>
-              <Select defaultValue="standard">
+              <div>
+                <Label htmlFor="accessibility-mode">Accessibility Mode</Label>
+                <p className="text-xs text-muted-foreground">Adjust UI for better accessibility</p>
+              </div>
+              <Select 
+                value={settings.accessibility_mode ?? 'standard'}
+                onValueChange={(v) => updateSettings({ accessibility_mode: v as any })}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
@@ -98,16 +171,17 @@ export default function Settings() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="timezone">Timezone</Label>
-              <Select defaultValue="UTC">
+              <Select 
+                value={settings.timezone ?? 'UTC'}
+                onValueChange={(v) => updateSettings({ timezone: v })}
+              >
                 <SelectTrigger className="w-48">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="UTC">UTC</SelectItem>
-                  <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                  <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                  <SelectItem value="Europe/London">London</SelectItem>
-                  <SelectItem value="Asia/Dubai">Dubai</SelectItem>
+                  {timezones.map(tz => (
+                    <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
