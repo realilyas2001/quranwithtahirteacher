@@ -43,6 +43,7 @@ import ExaminerRemarks from "./pages/lessons/ExaminerRemarks";
 import Reminders from "./pages/reminders/Reminders";
 import Salary from "./pages/salary/Salary";
 import Deductions from "./pages/salary/Deductions";
+import ConnectionRequests from "./pages/ConnectionRequests";
 
 // Student Pages
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -96,6 +97,7 @@ const App = () => (
               <Route path="/schedule" element={<ClassSchedule />} />
               <Route path="/students" element={<Students />} />
               <Route path="/students/:id" element={<StudentProfile />} />
+              <Route path="/connection-requests" element={<ConnectionRequests />} />
               
               {/* Lessons Sub-routes */}
               <Route path="/lessons/add" element={<AddLesson />} />
