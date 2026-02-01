@@ -35,12 +35,12 @@ export function PlaceholderPage({ title, description, icon: Icon = Construction 
   );
 }
 
-// Remaining placeholder pages (not yet implemented)
-export const LessonHistory = () => <PlaceholderPage title="Lesson History" description="View and filter past lesson records." />;
-export const ExaminerRemarks = () => <PlaceholderPage title="Examiner Remarks" description="View OCA feedback and examiner notes." />;
-export const Reminder = () => <PlaceholderPage title="Reminders" description="Set and manage your reminders." />;
-export const Salary = () => <PlaceholderPage title="Salary" description="View your salary breakdown and history." />;
-export const Deductions = () => <PlaceholderPage title="Deductions" description="View deduction details and history." />;
+// All placeholder pages have been implemented in Phase 10:
+// - LessonHistory -> src/pages/lessons/LessonHistory.tsx
+// - ExaminerRemarks -> src/pages/lessons/ExaminerRemarks.tsx
+// - Reminders -> src/pages/reminders/Reminders.tsx
+// - Salary -> src/pages/salary/Salary.tsx
+// - Deductions -> src/pages/salary/Deductions.tsx
 
 // Moved to dedicated pages in Phase 9:
 // - Tasks -> src/pages/tasks/Tasks.tsx
