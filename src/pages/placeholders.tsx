@@ -40,7 +40,7 @@ export function PlaceholderPage({ title, description, icon: Icon = Construction 
 // AddLesson moved to src/pages/lessons/AddLesson.tsx
 export const LessonHistory = () => <PlaceholderPage title="Lesson History" description="View and filter past lesson records." />;
 export const ExaminerRemarks = () => <PlaceholderPage title="Examiner Remarks" description="View OCA feedback and examiner notes." />;
-export const Attendance = () => <PlaceholderPage title="Attendance" description="Track and manage student attendance." />;
+// Attendance moved to src/pages/attendance/Attendance.tsx
 export const Reminder = () => <PlaceholderPage title="Reminders" description="Set and manage your reminders." />;
 export const Tasks = () => <PlaceholderPage title="Tasks" description="View and complete assigned tasks." />;
 export const Complaints = () => <PlaceholderPage title="Complaints" description="Submit and track complaints." />;

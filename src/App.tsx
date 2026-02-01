@@ -19,7 +19,6 @@ import ClassRoom from "./pages/ClassRoom";
 import {
   LessonHistory,
   ExaminerRemarks,
-  Attendance,
   Reminder,
   Tasks,
   Complaints,
@@ -34,6 +33,7 @@ import {
 } from "./pages/placeholders";
 import Students from "./pages/students/Students";
 import Classes from "./pages/classes/Classes";
+import Attendance from "./pages/attendance/Attendance";
 import ClassSchedule from "./pages/classes/ClassSchedule";
 import StudentProfile from "./pages/students/StudentProfile";
 import AddLesson from "./pages/lessons/AddLesson";
