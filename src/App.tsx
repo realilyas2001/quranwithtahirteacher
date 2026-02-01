@@ -16,27 +16,31 @@ import { DashboardLayout } from "./components/layout/DashboardLayout";
 import Dashboard from "./pages/Dashboard";
 import TodayClasses from "./pages/TodayClasses";
 import ClassRoom from "./pages/ClassRoom";
-import {
-  LessonHistory,
-  ExaminerRemarks,
-  Reminder,
-  Tasks,
-  Complaints,
-  Suggestions,
-  FeedbackPage,
-  Salary,
-  Deductions,
-  Improvement,
-  Rules,
-  Instruction,
-  Announcements,
-} from "./pages/placeholders";
 import Students from "./pages/students/Students";
 import Classes from "./pages/classes/Classes";
 import Attendance from "./pages/attendance/Attendance";
 import ClassSchedule from "./pages/classes/ClassSchedule";
 import StudentProfile from "./pages/students/StudentProfile";
 import AddLesson from "./pages/lessons/AddLesson";
+
+// Phase 9: Communication & Tasks
+import Tasks from "./pages/tasks/Tasks";
+import Complaints from "./pages/complaints/Complaints";
+import Suggestions from "./pages/suggestions/Suggestions";
+import Feedback from "./pages/feedback/Feedback";
+import Announcements from "./pages/announcements/Announcements";
+import Improvement from "./pages/improvement/Improvement";
+import Rules from "./pages/rules/Rules";
+import Instructions from "./pages/instructions/Instructions";
+
+// Remaining Placeholders
+import {
+  LessonHistory,
+  ExaminerRemarks,
+  Reminder,
+  Salary,
+  Deductions,
+} from "./pages/placeholders";
 
 import NotFound from "./pages/NotFound";
 
@@ -80,16 +84,20 @@ const App = () => (
               
               <Route path="/attendance" element={<Attendance />} />
               <Route path="/reminder" element={<Reminder />} />
+              
+              {/* Phase 9: Communication & Tasks */}
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/complaints" element={<Complaints />} />
               <Route path="/suggestions" element={<Suggestions />} />
-              <Route path="/feedback" element={<FeedbackPage />} />
-              <Route path="/salary" element={<Salary />} />
-              <Route path="/deductions" element={<Deductions />} />
+              <Route path="/feedback" element={<Feedback />} />
+              <Route path="/announcements" element={<Announcements />} />
               <Route path="/improvement" element={<Improvement />} />
               <Route path="/rules" element={<Rules />} />
-              <Route path="/instruction" element={<Instruction />} />
-              <Route path="/announcements" element={<Announcements />} />
+              <Route path="/instruction" element={<Instructions />} />
+              
+              {/* Salary & Deductions (still placeholder) */}
+              <Route path="/salary" element={<Salary />} />
+              <Route path="/deductions" element={<Deductions />} />
             </Route>
 
             {/* Redirects */}

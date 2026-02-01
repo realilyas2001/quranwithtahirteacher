@@ -35,20 +35,19 @@ export function PlaceholderPage({ title, description, icon: Icon = Construction 
   );
 }
 
-// Individual placeholder pages for each route
-// Classes and ClassSchedule moved to src/pages/classes/
-// AddLesson moved to src/pages/lessons/AddLesson.tsx
+// Remaining placeholder pages (not yet implemented)
 export const LessonHistory = () => <PlaceholderPage title="Lesson History" description="View and filter past lesson records." />;
 export const ExaminerRemarks = () => <PlaceholderPage title="Examiner Remarks" description="View OCA feedback and examiner notes." />;
-// Attendance moved to src/pages/attendance/Attendance.tsx
 export const Reminder = () => <PlaceholderPage title="Reminders" description="Set and manage your reminders." />;
-export const Tasks = () => <PlaceholderPage title="Tasks" description="View and complete assigned tasks." />;
-export const Complaints = () => <PlaceholderPage title="Complaints" description="Submit and track complaints." />;
-export const Suggestions = () => <PlaceholderPage title="Suggestions" description="Share your ideas and suggestions." />;
-export const FeedbackPage = () => <PlaceholderPage title="Feedback" description="View feedback from students and admin." />;
 export const Salary = () => <PlaceholderPage title="Salary" description="View your salary breakdown and history." />;
 export const Deductions = () => <PlaceholderPage title="Deductions" description="View deduction details and history." />;
-export const Improvement = () => <PlaceholderPage title="Improvement" description="Track improvement suggestions and actions." />;
-export const Rules = () => <PlaceholderPage title="Rules" description="Academy policies and procedures." />;
-export const Instruction = () => <PlaceholderPage title="Instructions" description="How-to guides and best practices." />;
-export const Announcements = () => <PlaceholderPage title="Announcements" description="Important announcements from admin." />;
+
+// Moved to dedicated pages in Phase 9:
+// - Tasks -> src/pages/tasks/Tasks.tsx
+// - Complaints -> src/pages/complaints/Complaints.tsx
+// - Suggestions -> src/pages/suggestions/Suggestions.tsx
+// - FeedbackPage -> src/pages/feedback/Feedback.tsx
+// - Improvement -> src/pages/improvement/Improvement.tsx
+// - Rules -> src/pages/rules/Rules.tsx
+// - Instruction -> src/pages/instructions/Instructions.tsx
+// - Announcements -> src/pages/announcements/Announcements.tsx
