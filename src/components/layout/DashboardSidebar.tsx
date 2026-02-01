@@ -17,16 +17,19 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 import {
   LayoutDashboard,
   CalendarDays,
   GraduationCap,
   Calendar,
   Users,
+  UserPlus,
   BookOpen,
   ClipboardCheck,
   Bell,
@@ -54,6 +57,7 @@ const navigationItems = [
   { name: 'Classes', href: '/classes', icon: GraduationCap },
   { name: 'Class Schedule', href: '/schedule', icon: Calendar },
   { name: 'My Students', href: '/students', icon: Users },
+  { name: 'Requests', href: '/connection-requests', icon: UserPlus, hasBadge: true },
   {
     name: 'Lessons',
     icon: BookOpen,
@@ -83,6 +87,7 @@ export function DashboardSidebar() {
   const { state, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
   const isCollapsed = state === 'collapsed';
+  const { pendingCount } = useConnectionRequests();
 
   const isActive = (href: string) => location.pathname === href;
   const isParentActive = (children: { href: string }[]) =>
@@ -184,7 +189,16 @@ export function DashboardSidebar() {
                       onClick={handleNavClick}
                     >
                       <item.icon className="h-4 w-4" />
-                      {!isCollapsed && <span>{item.name}</span>}
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex-1">{item.name}</span>
+                          {item.hasBadge && pendingCount > 0 && (
+                            <Badge className="h-5 px-1.5 bg-amber-500 text-white text-xs">
+                              {pendingCount}
+                            </Badge>
+                          )}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

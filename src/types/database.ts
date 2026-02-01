@@ -8,6 +8,7 @@ export type TaskStatus = 'pending' | 'in_progress' | 'completed';
 export type ComplaintStatus = 'open' | 'under_review' | 'resolved' | 'closed';
 export type AppRole = 'admin' | 'teacher' | 'student';
 export type NotificationType = 'class_reminder' | 'admin_message' | 'task_assignment' | 'announcement' | 'feedback' | 'system';
+export type ConnectionStatus = 'pending' | 'accepted' | 'rejected';
 
 export interface Profile {
   id: string;
@@ -336,4 +337,17 @@ export interface DashboardStats {
 
 export interface TodayClass extends Class {
   student: Student;
+}
+
+export interface ConnectionRequest {
+  id: string;
+  student_id: string;
+  teacher_id: string;
+  status: ConnectionStatus;
+  message: string | null;
+  created_at: string;
+  responded_at: string | null;
+  // Joined data
+  student?: Student;
+  teacher?: Teacher;
 }
