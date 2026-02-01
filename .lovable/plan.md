@@ -1,177 +1,152 @@
 
 
-# Phase 7: Class Management
+# Phase 8: Attendance Management
 
 ## Overview
 
-Build a comprehensive class management system that allows teachers to view all their classes (past, present, future), manage scheduling, track recovery classes, and quickly access class details. This phase replaces the placeholder pages for `/classes` and `/schedule` with fully functional implementations.
+Build a comprehensive attendance tracking system that allows teachers to record, view, and manage student attendance for their classes. This phase replaces the placeholder `/attendance` page with a fully functional implementation that integrates with existing class and student data.
 
 ---
 
 ## Architecture
 
 ```text
-Teacher navigates to /classes
+Teacher navigates to /attendance
         |
         v
-Classes Page loads:
-  - Tabbed view: All / Upcoming / Past / Recovery
-  - Filter by date range, student, status
-  - Sortable list with pagination
-  - Quick actions per class
+Attendance Page loads:
+  - Summary stats (Present, Absent, Late, No Answer)
+  - Date range and student filters
+  - Tabular/Card list of attendance records
+  - Bulk marking actions for today's classes
         |
         v
-Teacher navigates to /schedule
+Teacher records attendance:
+  - Quick mark from Today's Classes
+  - Edit existing records
+  - Add notes for context
         |
         v
-Schedule Page loads:
-  - Weekly calendar grid view
-  - Daily view option for mobile
-  - Color-coded by status
-  - Click to view/manage class
-        |
-        v
-Teacher can schedule recovery class
-        |
-        v
-RecoveryClassDialog opens:
-  - Select student
-  - Pick date/time
-  - Link to original missed class
-  - Creates new class record
+Attendance syncs with Classes:
+  - Updates when class status changes
+  - Reflected in student profiles
 ```
 
 ---
 
 ## User Flow
 
-### Classes List Page (`/classes`)
-1. Teacher sees a comprehensive list of all their classes
-2. Tabs allow filtering by category (All/Upcoming/Past/Recovery)
-3. Additional filters for date range, student, status
-4. Each row shows student, date/time, duration, status, lesson added status
-5. Quick actions: Start call, add lesson, view student, schedule recovery
-6. Pagination for large datasets
+### Attendance Page (`/attendance`)
+1. Teacher sees summary statistics for attendance (total present, absent, late, leave, no answer)
+2. Date range filter allows viewing specific periods
+3. Student filter narrows to specific student's attendance
+4. Each row shows student, class date/time, attendance status, and notes
+5. Quick edit allows changing status or adding notes
+6. Bulk actions for marking today's unmarked classes
 
-### Class Schedule Page (`/schedule`)
-1. Teacher sees a weekly calendar grid (Mon-Sun)
-2. Each cell shows classes scheduled for that day
-3. Classes are color-coded by status
-4. Click on a class to see details or take actions
-5. Navigation arrows to move between weeks
-6. "Today" button to jump to current week
-7. Daily view available for mobile/detailed viewing
-
-### Recovery Class Flow
-1. From a missed/no-answer class, click "Schedule Recovery"
-2. Dialog opens with student pre-selected
-3. Teacher selects date and time
-4. System creates new class with `is_recovery = true` and `recovery_for_class_id` set
-5. Both original and recovery classes are linked for tracking
+### Recording Attendance Flow
+1. After a class ends or is marked as missed/no_answer, attendance is auto-suggested
+2. Teacher can manually record or adjust attendance
+3. Notes field captures any special circumstances (late reason, leave type, etc.)
+4. Changes are instantly reflected across the system
 
 ---
 
 ## Components to Create
 
-### 1. Classes List Page
+### 1. Attendance Page
 
-**File**: `src/pages/classes/Classes.tsx`
+**File**: `src/pages/attendance/Attendance.tsx`
 
 **Features**:
-- Tabbed interface (All, Upcoming, Past, Recovery)
+- Summary stats cards (Present, Absent, Late, Leave, No Answer rates)
 - Date range picker for filtering
-- Student dropdown filter
-- Status multi-select filter
-- Paginated table/card list
-- Responsive design
+- Student dropdown filter  
+- Status filter (multi-select)
+- Attendance records table/card list
+- Empty state for no records
+- Loading skeletons
 
 **Columns/Fields**:
 - Student (avatar, name, country)
-- Date & Time
-- Duration
-- Status badge
-- Lesson Added indicator
-- Recovery badge (if applicable)
-- Actions dropdown
+- Class Date & Time
+- Status badge (with color-coded pills using existing CSS)
+- Note (if any)
+- Actions (Edit, View Class)
 
 ---
 
-### 2. Class Schedule Page
+### 2. Attendance Record Card
 
-**File**: `src/pages/classes/ClassSchedule.tsx`
+**File**: `src/components/attendance/AttendanceCard.tsx`
 
-**Features**:
-- Weekly calendar grid layout
-- Week navigation (previous/next arrows)
-- "Today" quick navigation button
-- Day headers with dates
-- Time slots or all-day view
-- Status color coding
-- Click to expand class details
-
-**Calendar Views**:
-- Week View (default): 7-day grid
-- Day View: Single day detailed view (mobile-friendly)
-
----
-
-### 3. Recovery Class Dialog
-
-**File**: `src/components/classes/RecoveryClassDialog.tsx`
-
-**Features**:
-- Modal/dialog for scheduling recovery
-- Pre-filled with original class student
-- Date picker for new date
-- Time selector
-- Duration (inherited from original or customizable)
-- Confirmation and validation
-- Creates linked recovery class
-
----
-
-### 4. Class Card Component
-
-**File**: `src/components/classes/ClassCard.tsx`
-
-**Purpose**: Reusable card for class display
+**Purpose**: Reusable card for attendance display in mobile/card views
 
 **Features**:
 - Student avatar and name
-- Date/time display
-- Status badge with icon
-- Recovery indicator
-- Lesson added checkmark
+- Class date/time display
+- Status pill (using existing attendance-present, attendance-absent, etc. CSS classes)
+- Note display (collapsible if long)
 - Quick action buttons
 
 ---
 
-### 5. Week Calendar Component
+### 3. Attendance Stats Component
 
-**File**: `src/components/classes/WeekCalendar.tsx`
+**File**: `src/components/attendance/AttendanceStats.tsx`
 
-**Purpose**: Weekly calendar grid UI
+**Purpose**: Summary statistics header
 
 **Features**:
-- 7-day horizontal grid
-- Day headers with full date
-- Class items positioned in cells
-- Overflow handling for busy days
-- Click handlers for interactions
+- Total records count
+- Present count with percentage
+- Absent count with percentage
+- Late count
+- Leave count
+- Average attendance rate
 
 ---
 
-### 6. useClasses Hook
+### 4. Attendance Edit Dialog
 
-**File**: `src/hooks/useClasses.ts`
+**File**: `src/components/attendance/AttendanceEditDialog.tsx`
 
-**Purpose**: Data fetching and mutations for classes
+**Purpose**: Modal for editing attendance records
 
 **Features**:
-- Fetch classes with filters (date range, status, student)
-- Create recovery class mutation
-- Update class status mutation
-- Statistics queries
+- Status dropdown (Present, Absent, Late, Leave, No Answer)
+- Note textarea
+- Save/Cancel actions
+- Validation
+
+---
+
+### 5. Quick Attendance Marker
+
+**File**: `src/components/attendance/QuickAttendanceMarker.tsx`
+
+**Purpose**: Bulk marking for today's classes without attendance records
+
+**Features**:
+- List of today's completed/ended classes without attendance
+- Quick status buttons for each
+- Batch mark all as present option
+- Collapsible section
+
+---
+
+### 6. useAttendance Hook
+
+**File**: `src/hooks/useAttendance.ts`
+
+**Purpose**: Data fetching and mutations for attendance
+
+**Features**:
+- Fetch attendance with filters (date range, status, student)
+- Create attendance record mutation
+- Update attendance record mutation
+- Statistics calculation queries
+- Auto-create attendance when class ends
 
 ---
 
@@ -179,13 +154,12 @@ RecoveryClassDialog opens:
 
 | File | Purpose |
 |------|---------|
-| `src/pages/classes/Classes.tsx` | Main classes list page |
-| `src/pages/classes/ClassSchedule.tsx` | Weekly schedule view |
-| `src/components/classes/RecoveryClassDialog.tsx` | Recovery scheduling modal |
-| `src/components/classes/ClassCard.tsx` | Reusable class card |
-| `src/components/classes/WeekCalendar.tsx` | Calendar grid component |
-| `src/components/classes/ClassFilters.tsx` | Filter controls component |
-| `src/hooks/useClasses.ts` | Data fetching hook |
+| `src/pages/attendance/Attendance.tsx` | Main attendance page |
+| `src/components/attendance/AttendanceCard.tsx` | Reusable attendance card |
+| `src/components/attendance/AttendanceStats.tsx` | Summary statistics |
+| `src/components/attendance/AttendanceEditDialog.tsx` | Edit modal |
+| `src/components/attendance/QuickAttendanceMarker.tsx` | Bulk marking component |
+| `src/hooks/useAttendance.ts` | Data fetching hook |
 
 ---
 
@@ -193,155 +167,162 @@ RecoveryClassDialog opens:
 
 | File | Changes |
 |------|---------|
-| `src/pages/placeholders.tsx` | Remove Classes and ClassSchedule exports |
-| `src/App.tsx` | Update routes to new components |
+| `src/pages/placeholders.tsx` | Remove Attendance export |
+| `src/App.tsx` | Update route to new component |
+| `src/pages/TodayClasses.tsx` | Add attendance marking after class ends |
 
 ---
 
 ## Data Fetching
 
-### Classes List Query
+### Attendance List Query
 ```text
-SELECT * FROM classes
+SELECT attendance.*, 
+       student:students(id, full_name, avatar_url, country, country_code),
+       class:classes(id, scheduled_date, start_time, duration_minutes)
+FROM attendance
 WHERE teacher_id = current_teacher_id
-  AND scheduled_date BETWEEN start_date AND end_date
+  AND recorded_at BETWEEN start_date AND end_date
+  AND (student_id = filter_student OR filter_student IS NULL)
   AND (status = filter_status OR filter_status IS NULL)
-ORDER BY scheduled_date DESC, start_time DESC
-LIMIT page_size OFFSET page_offset
+ORDER BY recorded_at DESC
 ```
 
-### Weekly Schedule Query
+### Statistics Query
 ```text
-SELECT * FROM classes
+SELECT 
+  COUNT(*) as total,
+  COUNT(*) FILTER (WHERE status = 'present') as present,
+  COUNT(*) FILTER (WHERE status = 'absent') as absent,
+  COUNT(*) FILTER (WHERE status = 'late') as late,
+  COUNT(*) FILTER (WHERE status = 'leave') as leave,
+  COUNT(*) FILTER (WHERE status = 'no_answer') as no_answer
+FROM attendance
 WHERE teacher_id = current_teacher_id
-  AND scheduled_date BETWEEN week_start AND week_end
-ORDER BY scheduled_date ASC, start_time ASC
+  AND recorded_at >= date_range_start
 ```
 
-### Recovery Classes Query
+### Create/Update Attendance
 ```text
-SELECT * FROM classes
-WHERE teacher_id = current_teacher_id
-  AND is_recovery = true
-ORDER BY scheduled_date DESC
-```
+-- Create
+INSERT INTO attendance (class_id, teacher_id, student_id, status, note)
+VALUES (class_id, teacher_id, student_id, status, note)
 
-### Create Recovery Class
-```text
-INSERT INTO classes (
-  teacher_id, student_id, scheduled_date, start_time,
-  duration_minutes, status, is_recovery, recovery_for_class_id
-) VALUES (...)
+-- Update
+UPDATE attendance SET status = new_status, note = new_note
+WHERE id = attendance_id AND teacher_id = current_teacher_id
 ```
 
 ---
 
 ## UI Layouts
 
-### Classes List Page
+### Attendance Page - Desktop
 ```text
 +----------------------------------------------------------+
-|  All Classes                                              |
+|  Attendance                                               |
+|  Track and manage student attendance                      |
 +----------------------------------------------------------+
-|  [All] [Upcoming] [Past] [Recovery]                       |
+|  +-----------+ +-----------+ +-----------+ +-----------+  |
+|  | Present   | | Absent    | | Late      | | Leave     |  |
+|  | 145 (82%) | | 18 (10%)  | | 10 (6%)   | | 4 (2%)    |  |
+|  +-----------+ +-----------+ +-----------+ +-----------+  |
++----------------------------------------------------------+
+|  [Date Range ▼] [Student ▼] [Status ▼] [Clear Filters]   |
++----------------------------------------------------------+
 |                                                           |
-|  [Date Range ▼] [Student ▼] [Status ▼]  [Clear Filters]  |
+|  Quick Mark: 3 classes today need attendance              |
+|  [Mark All Present] or mark individually below            |
+|                                                           |
 +----------------------------------------------------------+
 |  +------------------------------------------------------+ |
-|  | Avatar | Ahmed Hassan     | Jan 31 | 10:00 AM | 30m  | |
-|  |        | Saudi Arabia     | Scheduled | No Lesson    | |
-|  |        |                  | [Call] [Add Lesson] [▼]  | |
+|  | Avatar | Ahmed Hassan     | Jan 31 | 10:00 AM        | |
+|  |        | Saudi Arabia     | [Present]          [Edit]| |
 |  +------------------------------------------------------+ |
-|  | Avatar | Fatima Ali       | Jan 31 | 11:00 AM | 45m  | |
-|  |        | UAE              | Completed | Lesson Added | |
-|  |        |                  | [View Lesson] [▼]        | |
+|  | Avatar | Fatima Ali       | Jan 31 | 11:00 AM        | |
+|  |        | UAE              | [Late] Late 5 min  [Edit]| |
 |  +------------------------------------------------------+ |
-|  | Avatar | Omar Khan        | Jan 30 | 09:00 AM | 30m  | |
-|  |        | Pakistan         | Missed | [Recovery]      | |
-|  |        |                  | [Schedule Recovery] [▼]  | |
+|  | Avatar | Omar Khan        | Jan 30 | 09:00 AM        | |
+|  |        | Pakistan         | [Absent]           [Edit]| |
 |  +------------------------------------------------------+ |
-|                                                           |
-|  [< Previous] Page 1 of 5 [Next >]                       |
 +----------------------------------------------------------+
 ```
 
-### Week Schedule Page
+### Attendance Edit Dialog
 ```text
-+----------------------------------------------------------+
-|  Class Schedule                          [< ] Feb 2026 [>]|
-|                                                    [Today]|
-+----------------------------------------------------------+
-|  Mon 27   | Tue 28   | Wed 29  | Thu 30  | Fri 31 | Sat 1 |
-+----------+-----------+---------+---------+--------+--------+
-|          |          |         |         |        |        |
-| 10:00 AM | 10:00 AM |         | 10:00AM |10:00AM |        |
-| Ahmed H. | Fatima A.|         | Omar K. |Ahmed H.|        |
-| [Sched.] | [Sched.] |         |[Complt.]|[Sched.]|        |
-|          |          |         |         |        |        |
-| 11:00 AM |          |         |         |11:30AM |        |
-| Sara M.  |          |         |         |Sara M. |        |
-| [Sched.] |          |         |         |[Sched.]|        |
-|          |          |         |         |        |        |
-+----------+-----------+---------+---------+--------+--------+
++------------------------------------------+
+|  Edit Attendance                    [X]   |
++------------------------------------------+
+|                                          |
+|  Student: Ahmed Hassan                   |
+|  Class: January 31, 2026 @ 10:00 AM      |
+|                                          |
+|  Status ────────────────────────────────  |
+|  [Present ▼]                             |
+|                                          |
+|  Note ──────────────────────────────────  |
+|  [Student joined on time today      ]    |
+|  [                                  ]    |
+|                                          |
+|       [Cancel]            [Save Changes] |
++------------------------------------------+
 ```
 
-### Recovery Class Dialog
+### Quick Attendance Marker (Collapsed Section)
 ```text
-+------------------------------------------+
-|  Schedule Recovery Class            [X]   |
-+------------------------------------------+
-|                                          |
-|  Original Class                          |
-|  Ahmed Hassan • Jan 25, 10:00 AM         |
-|  Status: Missed                          |
-|                                          |
-|  New Date ─────────────────────────────  |
-|  [February 5, 2026                  ▼]   |
-|                                          |
-|  Time ─────────────────────────────────  |
-|  [10:00 AM                          ▼]   |
-|                                          |
-|  Duration ─────────────────────────────  |
-|  [30 minutes                        ▼]   |
-|                                          |
-|  Notes ────────────────────────────────  |
-|  [Recovery for missed class on Jan 25]   |
-|                                          |
-|       [Cancel]        [Schedule Recovery]|
-+------------------------------------------+
++----------------------------------------------------------+
+|  ▼ Classes Needing Attendance (3)         [Mark All ✓]   |
++----------------------------------------------------------+
+|  Ahmed Hassan • 10:00 AM • Completed                      |
+|  [Present] [Absent] [Late] [Leave] [No Answer]           |
+|  -------------------------------------------------------- |
+|  Fatima Ali • 11:00 AM • Completed                        |
+|  [Present] [Absent] [Late] [Leave] [No Answer]           |
++----------------------------------------------------------+
 ```
 
 ---
 
 ## Technical Details
 
-### Status Color Coding
+### Status Color Coding (Using Existing CSS)
 ```text
-- scheduled: Blue (info)
-- in_progress: Yellow (warning) with pulse animation
-- completed: Green (success)
-- missed: Red (destructive)
-- no_answer: Orange (warning)
-- cancelled: Gray (muted)
+- present: attendance-present (green)
+- absent: attendance-absent (red)
+- late: attendance-late (orange/yellow)
+- leave: attendance-leave (blue)
+- no_answer: attendance-no-answer (gray)
 ```
-
-### Pagination
-- Default page size: 10 classes
-- Options: 10, 25, 50 per page
-- Total count displayed
-- Keyboard navigation support
 
 ### Date Range Presets
 - Today
-- This Week
+- This Week  
 - Last 7 Days
 - This Month
 - Last 30 Days
 - Custom Range
 
-### Filter Combinations
-Filters work together:
-- Tab (category) + Date Range + Student + Status
+### Auto-Attendance Logic
+When a class status changes to:
+- `completed` → Suggest marking as "present"
+- `missed` → Suggest marking as "absent"
+- `no_answer` → Suggest marking as "no_answer"
+
+---
+
+## Integration Points
+
+### Today's Classes Page
+- After marking class as "completed", prompt to record attendance
+- Add attendance status indicator to class cards
+
+### Student Profile Page
+- Show attendance summary in Overview tab
+- Link to filtered attendance records
+
+### Class Card Component
+- Display attendance status if recorded
+- Quick attendance action for completed classes
 
 ---
 
@@ -349,46 +330,34 @@ Filters work together:
 
 | Scenario | Handling |
 |----------|----------|
-| No classes found | Show "No classes" empty state with context message |
+| No attendance records | Show "No records" empty state with context message |
 | Failed to load | Show error state with retry button |
-| Recovery creation fails | Show error toast, keep dialog open |
-| Invalid date selection | Inline validation error |
-| Past date for recovery | Prevent selection, show warning |
+| Update fails | Show error toast, keep dialog open |
+| Duplicate attendance for same class | Prevent creation, offer to update existing |
 
 ---
 
 ## Mobile Responsiveness
 
-### Classes List Page
+### Attendance Page
 - **Desktop**: Full table with all columns
 - **Tablet**: Reduced columns, key info only
-- **Mobile**: Card-based list view
+- **Mobile**: Card-based list view using AttendanceCard component
 
-### Schedule Page
-- **Desktop**: Full 7-day grid
-- **Tablet**: 5-day grid (Mon-Fri) with weekend toggle
-- **Mobile**: Day view with swipe navigation between days
-
----
-
-## Performance Considerations
-
-1. **Pagination**: Limit initial load to 10 classes
-2. **Date-based queries**: Index on `scheduled_date` column
-3. **Cached filters**: Remember user filter preferences
-4. **Optimistic updates**: Immediate UI feedback for status changes
-5. **Prefetching**: Load adjacent weeks when navigating calendar
+### Quick Marker
+- **Desktop**: Horizontal button row for statuses
+- **Mobile**: Dropdown selector instead of buttons
 
 ---
 
 ## Outcome
 
 After implementation:
-- Teachers can view and manage all their classes in one place
-- Weekly calendar provides at-a-glance schedule visibility
-- Easy recovery class scheduling for missed sessions
-- Filter and search capabilities for finding specific classes
-- Consistent status tracking and color coding
+- Teachers can easily track and manage student attendance
+- Quick marking from Today's Classes streamlines workflow
+- Statistics provide at-a-glance attendance health
+- Filtering enables finding specific records quickly
+- Integration with class status ensures data consistency
 - Mobile-friendly design for on-the-go access
-- Foundation for future features (bulk actions, export, etc.)
+- Foundation for attendance reports and analytics
 
