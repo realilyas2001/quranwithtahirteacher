@@ -9,13 +9,14 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
-// Dashboard Layout
+// Dashboard Layouts
 import { DashboardLayout } from "./components/layout/DashboardLayout";
+import { StudentLayout } from "./components/layout/StudentLayout";
 
 // Public Pages
 import Landing from "./pages/Landing";
 
-// Main Pages
+// Main Pages (Teacher)
 import Dashboard from "./pages/Dashboard";
 import TodayClasses from "./pages/TodayClasses";
 import ClassRoom from "./pages/ClassRoom";
@@ -42,6 +43,23 @@ import ExaminerRemarks from "./pages/lessons/ExaminerRemarks";
 import Reminders from "./pages/reminders/Reminders";
 import Salary from "./pages/salary/Salary";
 import Deductions from "./pages/salary/Deductions";
+
+// Student Pages
+import StudentDashboard from "./pages/student/StudentDashboard";
+import FindTutors from "./pages/student/FindTutors";
+import StudentTodayClasses from "./pages/student/TodayClasses";
+import MyTeacher from "./pages/student/MyTeacher";
+import MyClasses from "./pages/student/MyClasses";
+import MySchedule from "./pages/student/MySchedule";
+import StudentLessons from "./pages/student/Lessons";
+import MyProgress from "./pages/student/MyProgress";
+import StudentAttendance from "./pages/student/Attendance";
+import StudentMessages from "./pages/student/Messages";
+import StudentRequests from "./pages/student/Requests";
+import StudentAnnouncements from "./pages/student/Announcements";
+import StudentProfile2 from "./pages/student/Profile";
+import StudentSettings from "./pages/student/Settings";
+import StudentHelp from "./pages/student/Help";
 
 import NotFound from "./pages/NotFound";
 
@@ -70,7 +88,7 @@ const App = () => (
             {/* Video Classroom (outside dashboard layout) */}
             <Route path="/classroom/:classId" element={<ClassRoom />} />
 
-            {/* Protected Dashboard Routes */}
+            {/* Protected Teacher Dashboard Routes */}
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/today-classes" element={<TodayClasses />} />
@@ -100,6 +118,25 @@ const App = () => (
               {/* Phase 10: Salary & Deductions */}
               <Route path="/salary" element={<Salary />} />
               <Route path="/deductions" element={<Deductions />} />
+            </Route>
+
+            {/* Protected Student Dashboard Routes */}
+            <Route element={<StudentLayout />}>
+              <Route path="/student/dashboard" element={<StudentDashboard />} />
+              <Route path="/student/today" element={<StudentTodayClasses />} />
+              <Route path="/student/find-tutors" element={<FindTutors />} />
+              <Route path="/student/my-teacher" element={<MyTeacher />} />
+              <Route path="/student/classes" element={<MyClasses />} />
+              <Route path="/student/schedule" element={<MySchedule />} />
+              <Route path="/student/lessons" element={<StudentLessons />} />
+              <Route path="/student/progress" element={<MyProgress />} />
+              <Route path="/student/attendance" element={<StudentAttendance />} />
+              <Route path="/student/messages" element={<StudentMessages />} />
+              <Route path="/student/requests" element={<StudentRequests />} />
+              <Route path="/student/announcements" element={<StudentAnnouncements />} />
+              <Route path="/student/profile" element={<StudentProfile2 />} />
+              <Route path="/student/settings" element={<StudentSettings />} />
+              <Route path="/student/help" element={<StudentHelp />} />
             </Route>
 
             

@@ -60,6 +60,9 @@ export interface Student {
   current_juzz: number;
   status: string;
   notes: string | null;
+  parent_id: string | null;
+  accessibility_mode: string;
+  is_parent_account: boolean;
   created_at: string;
   updated_at: string;
 }

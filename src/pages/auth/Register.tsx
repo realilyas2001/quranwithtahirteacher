@@ -6,7 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { BookMarked, Loader2, Mail, Lock, User } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { BookMarked, Loader2, Mail, Lock, User, GraduationCap, Users } from 'lucide-react';
+
+type UserRole = 'student' | 'teacher' | 'parent';
 
 export default function Register() {
   const { user, signUp, isLoading } = useAuth();
@@ -15,6 +18,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState<UserRole>('student');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +51,7 @@ export default function Register() {
 
     setIsSubmitting(true);
 
-    const { error: signUpError } = await signUp(email, password, fullName);
+    const { error: signUpError } = await signUp(email, password, fullName, role);
     
     if (signUpError) {
       setError(signUpError.message);
@@ -95,15 +99,15 @@ export default function Register() {
           <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center">
             <BookMarked className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Quran Academy</h1>
-          <p className="text-muted-foreground">Teacher Dashboard</p>
+          <h1 className="text-2xl font-bold text-foreground">Quran With Tahir</h1>
+          <p className="text-muted-foreground">Online Quran Academy</p>
         </div>
 
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Create an account</CardTitle>
             <CardDescription className="text-center">
-              Register as a teacher to get started
+              Join our academy and start your journey
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -113,6 +117,60 @@ export default function Register() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
+
+              {/* Role Selection */}
+              <div className="space-y-3">
+                <Label>I am a...</Label>
+                <RadioGroup
+                  value={role}
+                  onValueChange={(value) => setRole(value as UserRole)}
+                  className="grid grid-cols-3 gap-2"
+                >
+                  <div>
+                    <RadioGroupItem
+                      value="student"
+                      id="student"
+                      className="peer sr-only"
+                    />
+                    <Label
+                      htmlFor="student"
+                      className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    >
+                      <GraduationCap className="mb-2 h-5 w-5" />
+                      <span className="text-xs font-medium">Student</span>
+                    </Label>
+                  </div>
+                  <div>
+                    <RadioGroupItem
+                      value="teacher"
+                      id="teacher"
+                      className="peer sr-only"
+                    />
+                    <Label
+                      htmlFor="teacher"
+                      className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    >
+                      <BookMarked className="mb-2 h-5 w-5" />
+                      <span className="text-xs font-medium">Teacher</span>
+                    </Label>
+                  </div>
+                  <div>
+                    <RadioGroupItem
+                      value="parent"
+                      id="parent"
+                      className="peer sr-only"
+                    />
+                    <Label
+                      htmlFor="parent"
+                      className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                    >
+                      <Users className="mb-2 h-5 w-5" />
+                      <span className="text-xs font-medium">Parent</span>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="fullName">Full Name</Label>
                 <div className="relative">
@@ -135,7 +193,7 @@ export default function Register() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="teacher@example.com"
+                    placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
